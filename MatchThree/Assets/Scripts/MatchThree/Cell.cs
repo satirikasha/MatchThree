@@ -4,7 +4,16 @@
 
   public class Cell : MonoBehaviour {
 
-    public Item ChildItem { get; set; }
+    public Item ChildItem { get {
+      return _ChildItem;
+      }
+      set {
+        _ChildItem = value;
+        _ChildItem.transform.position = this.transform.position;
+      }
+    }
+    private Item _ChildItem;
+
     public Position BoardPosition { get; set; }
 
     public Cell Up {

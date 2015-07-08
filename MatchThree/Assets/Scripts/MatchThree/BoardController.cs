@@ -98,51 +98,84 @@
     }
 
     public List<Move> GetPossibleMoves() {
-      var time = DateTime.Now;
       HashSet<Move> result = new HashSet<Move>();
       for(int i = 0; i < CELLS_COUNT_X; i++) {
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
+          #region Moves detecting
           var cell = Board[i, j];
           var cellType = cell.ChildItem.Type;
+
           if(cell.Right != null && cell.Right.ChildItem.Type == cellType) {
             if(cell.Left != null) {
               var targetCell = cell.Left;
-              if(targetCell.Up != null && targetCell.Up.ChildItem.Type == cellType) {
-                result.Add(new Move(targetCell, targetCell.Up)); // !! Сделать свой хешсет чтобы ходы считались одинаковыми
-              }
-              if(targetCell.Down != null && targetCell.Down.ChildItem.Type == cellType) {
+              if(targetCell.Up != null && targetCell.Up.ChildItem.Type == cellType)
+                result.Add(new Move(targetCell, targetCell.Up));
+              if(targetCell.Down != null && targetCell.Down.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Down));
-              }
-              if(targetCell.Left != null && targetCell.Left.ChildItem.Type == cellType) {
+              if(targetCell.Left != null && targetCell.Left.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Left));
-              }
             }
             if(cell.Right.Right != null) {
               var targetCell = cell.Right.Right;
-              if(targetCell.Up != null && targetCell.Up.ChildItem.Type == cellType) {
+              if(targetCell.Up != null && targetCell.Up.ChildItem.Type == cellType) 
                 result.Add(new Move(targetCell, targetCell.Up));
-              }
-              if(targetCell.Down != null && targetCell.Down.ChildItem.Type == cellType) {
+              if(targetCell.Down != null && targetCell.Down.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Down));
-              }
-              if(targetCell.Right != null && targetCell.Right.ChildItem.Type == cellType) {
+              if(targetCell.Right != null && targetCell.Right.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Right));
-              }
             }
           }
+
+          if(cell.Right != null && cell.Right.Right != null && cell.Right.Right.ChildItem.Type == cellType) {
+            var targetCell = cell.Right;
+            if(targetCell.Up != null && targetCell.Up.ChildItem.Type == cellType)
+              result.Add(new Move(targetCell, targetCell.Up));
+            if(targetCell.Down != null && targetCell.Down.ChildItem.Type == cellType)
+              result.Add(new Move(targetCell, targetCell.Down));
+          }
+
+          if(cell.Up != null && cell.Up.ChildItem.Type == cellType) {
+            if(cell.Down != null) {
+              var targetCell = cell.Down;
+              if(targetCell.Right != null && targetCell.Right.ChildItem.Type == cellType)
+                result.Add(new Move(targetCell, targetCell.Right));
+              if(targetCell.Down != null && targetCell.Down.ChildItem.Type == cellType)
+                result.Add(new Move(targetCell, targetCell.Down));
+              if(targetCell.Left != null && targetCell.Left.ChildItem.Type == cellType)
+                result.Add(new Move(targetCell, targetCell.Left));
+            }
+            if(cell.Up.Up != null) {
+              var targetCell = cell.Up.Up;
+              if(targetCell.Up != null && targetCell.Up.ChildItem.Type == cellType)
+                result.Add(new Move(targetCell, targetCell.Up));
+              if(targetCell.Left != null && targetCell.Left.ChildItem.Type == cellType)
+                result.Add(new Move(targetCell, targetCell.Left));
+              if(targetCell.Right != null && targetCell.Right.ChildItem.Type == cellType)
+                result.Add(new Move(targetCell, targetCell.Right));
+            }
+          }
+
+          if(cell.Up != null && cell.Up.Up != null && cell.Up.Up.ChildItem.Type == cellType) {
+            var targetCell = cell.Up;
+            if(targetCell.Left != null && targetCell.Left.ChildItem.Type == cellType)
+              result.Add(new Move(targetCell, targetCell.Left));
+            if(targetCell.Right != null && targetCell.Right.ChildItem.Type == cellType)
+              result.Add(new Move(targetCell, targetCell.Right));
+          }
+
+          #endregion
         }
       }
-      var deltaTime = DateTime.Now - time;
-      Debug.Log("Found " + result.Count + " possible moves");
-      Debug.Log("Detecting moves took " + deltaTime.Milliseconds + " milliseconds");
-      result.ToList().ForEach(_ => _.To.ChildItem.GetComponent<SpriteRenderer>().color = Color.black);
       return result.ToList();
     }
 
     public void Shuffle() {
       RemoveItems();
       PrepareItems();
-      GetPossibleMoves();
+    }
+
+    public void RandomMove() {
+      GetPossibleMoves().GetRandomElement().Apply();
     }
   }
 }

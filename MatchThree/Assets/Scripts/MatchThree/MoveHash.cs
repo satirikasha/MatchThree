@@ -5,10 +5,9 @@
   using System.Text;
 
   public class MoveHash : List<Move> {
-
-    public override void Add(Move item){
-      if(this.TrueForAll(_ => _.))
+    public new void Add(Move item){
+      if(this.TrueForAll(_ => _ != item))
+        base.Add(item);
     }
-
   }
 }

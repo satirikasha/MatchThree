@@ -12,5 +12,19 @@
       From = from;
       To = to;
     }
+
+    public static bool operator ==(Move x, Move y) {
+      return ReferenceEquals(x.From, y.From) && ReferenceEquals(x.To, y.To) || ReferenceEquals(x.From, y.To) && ReferenceEquals(x.To, y.From);
+    }
+
+    public static bool operator !=(Move x, Move y) {
+      return !(x == y);
+    }
+
+    public void Apply() {
+      var toItem = To.ChildItem;
+      To.ChildItem = From.ChildItem;
+      From.ChildItem = toItem;
+    }
   }
 }
