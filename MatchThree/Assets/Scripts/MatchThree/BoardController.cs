@@ -30,18 +30,13 @@
 
     private List<ItemType> itemTypes;
 
-    // Use this for initialization
     void Awake() {
       _Current = this;
       PrepareItemTypes();
       PrepareFactory();
       PrepareCells();
       PrepareItems();
-    }
-
-    // Update is called once per frame
-    void Update() {
-
+      PrepareInput();
     }
 
     private void PrepareItemTypes() {
@@ -86,6 +81,32 @@
           item.Show();
         }
       }
+    }
+
+    private void PrepareInput() {
+      BoardInput.Current.OnSwipe += (pos, dir) => {
+        Cell fromCell;
+        Cell toCell;
+        fromCell = GetCell(pos);
+        if(dir == Vector2.left)
+          toCell = fromCell.Left;
+        else if(dir == Vector2.right)
+          toCell = fromCell.Right;
+        else if(dir == Vector2.down)
+          toCell = fromCell.Down;
+        else if(dir == Vector2.up)
+          toCell = fromCell.Up;
+        else throw new Exception("Bad snap direction vector");
+        fromCell.GetComponent<SpriteRenderer>().color = Color.red;
+        toCell.GetComponent<SpriteRenderer>().color = Color.green;
+      };
+    }
+
+    private Cell GetCell(Vector2 position) {
+      var offset = new Vector2(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
+      Vector2 pos = Camera.main.ScreenToWorldPoint(position);
+      pos -= this.transform.position.ToVector2() + offset;
+      return Board[Mathf.RoundToInt((pos.x - CellWidth / 2) / CellWidth), Mathf.RoundToInt((pos.y - CellHeight / 2) / CellHeight)];
     }
 
     private void RemoveItems() {
