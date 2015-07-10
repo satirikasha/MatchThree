@@ -88,6 +88,7 @@
     <Compile Include="Assets\Scripts\MatchThree\BoardController.cs" />
     <Compile Include="Assets\Scripts\MatchThree\BoardInput.cs" />
     <Compile Include="Assets\Scripts\MatchThree\Cell.cs" />
+    <Compile Include="Assets\Scripts\MatchThree\Combination.cs" />
     <Compile Include="Assets\Scripts\MatchThree\Item.cs" />
     <Compile Include="Assets\Scripts\MatchThree\ItemFactory.cs" />
     <Compile Include="Assets\Scripts\MatchThree\ItemType.cs" />

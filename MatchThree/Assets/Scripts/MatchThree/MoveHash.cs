@@ -5,9 +5,13 @@
   using System.Text;
 
   public class MoveHash : List<Move> {
-    public new void Add(Move item){
-      if(this.TrueForAll(_ => _ != item))
+    public new void Add(Move item) {
+      if(!this.Contains(item))
         base.Add(item);
+    }
+
+    public new bool Contains(Move item) {
+      return this.Any(_ => _ == item);
     }
   }
 }

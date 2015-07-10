@@ -97,8 +97,9 @@
         else if(dir == Vector2.up)
           toCell = fromCell.Up;
         else throw new Exception("Bad snap direction vector");
-        fromCell.GetComponent<SpriteRenderer>().color = Color.red;
-        toCell.GetComponent<SpriteRenderer>().color = Color.green;
+        Move move = new Move(fromCell, toCell);
+        if(GetPossibleMoves().Contains(move))
+          move.Apply();
       };
     }
 
@@ -118,8 +119,8 @@
       }
     }
 
-    public List<Move> GetPossibleMoves() {
-      HashSet<Move> result = new HashSet<Move>();
+    public MoveHash GetPossibleMoves() {
+      MoveHash result = new MoveHash();
       for(int i = 0; i < CELLS_COUNT_X; i++) {
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
           #region Moves detecting
@@ -187,7 +188,15 @@
           #endregion
         }
       }
-      return result.ToList();
+      return result;
+    }
+
+    public void NormalizeBoard() {
+      for(int i = 0; i < CELLS_COUNT_X; i++) {
+        for(int j = 0; j < CELLS_COUNT_Y; j++) {
+
+        }
+      }
     }
 
     public void Shuffle() {
