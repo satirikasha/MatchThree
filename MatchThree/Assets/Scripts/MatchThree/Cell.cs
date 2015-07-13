@@ -4,12 +4,14 @@
 
   public class Cell : MonoBehaviour {
 
-    public Item ChildItem { get {
-      return _ChildItem;
+    public Item ChildItem {
+      get {
+        return _ChildItem;
       }
       set {
         _ChildItem = value;
-        _ChildItem.transform.position = this.transform.position;
+        if(value != null)
+          _ChildItem.transform.position = this.transform.position;
       }
     }
     private Item _ChildItem;

@@ -32,6 +32,7 @@
 
     public void Hide() {
       this.transform.parent = ItemFactory.Current.transform;
+      ParentCell.ChildItem = null;
       ParentCell = null;
       this.gameObject.SetActive(false);
     }

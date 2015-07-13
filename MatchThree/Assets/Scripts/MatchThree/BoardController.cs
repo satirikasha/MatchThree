@@ -100,6 +100,15 @@
         Move move = new Move(fromCell, toCell);
         if(GetPossibleMoves().Contains(move))
           move.Apply();
+        Combination combination;
+        foreach(var cell in Board) {
+          Debug.Log("Detect attempt");
+          if(Combination.Detect(out combination, cell)) {
+            Debug.Log("Detected!");
+            combination.Remove();
+            break;
+          }
+        }
       };
     }
 
