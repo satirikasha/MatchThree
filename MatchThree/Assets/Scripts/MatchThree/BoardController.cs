@@ -100,15 +100,18 @@
         Move move = new Move(fromCell, toCell);
         if(GetPossibleMoves().Contains(move))
           move.Apply();
+        else
+          return;
         Combination combination;
-        foreach(var cell in Board) {
-          Debug.Log("Detect attempt");
-          if(Combination.Detect(out combination, cell)) {
-            Debug.Log("Detected!");
-            combination.Remove();
-            break;
-          }
-        }
+        move.From.ChildItem.GetComponent<SpriteRenderer>().color = Color.red;
+        move.To.ChildItem.GetComponent<SpriteRenderer>().color = Color.green;
+        //if(Combination.Detect(out combination, move.To)) {
+        //  combination.Remove();
+        //}
+        //move.To.ChildItem.GetComponent<SpriteRenderer>().color = Color.grey;
+        //if(Combination.Detect(out combination, move.From)) {
+        //  combination.Remove();
+        //}
       };
     }
 
@@ -123,7 +126,8 @@
       for(int i = 0; i < CELLS_COUNT_X; i++) {
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
           var cell = Board[i, j];
-          cell.ChildItem.Hide();
+          if(cell.ChildItem != null)
+            cell.ChildItem.Hide();
         }
       }
     }
@@ -135,62 +139,61 @@
           #region Moves detecting
           var cell = Board[i, j];
           var cellType = cell.ChildItem.Type;
-
-          if(cell.Right != null && cell.Right.ChildItem.Type == cellType) {
-            if(cell.Left != null) {
+          if(cell.Right.IsNotNullOrEmpty() && cell.Right.ChildItem.Type == cellType) {
+            if(cell.Left.IsNotNullOrEmpty()) {
               var targetCell = cell.Left;
-              if(targetCell.Up != null && targetCell.Up.ChildItem.Type == cellType)
+              if(targetCell.Up.IsNotNullOrEmpty() && targetCell.Up.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Up));
-              if(targetCell.Down != null && targetCell.Down.ChildItem.Type == cellType)
+              if(targetCell.Down.IsNotNullOrEmpty() && targetCell.Down.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Down));
-              if(targetCell.Left != null && targetCell.Left.ChildItem.Type == cellType)
+              if(targetCell.Left.IsNotNullOrEmpty() && targetCell.Left.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Left));
             }
-            if(cell.Right.Right != null) {
+            if(cell.Right.Right.IsNotNullOrEmpty()) {
               var targetCell = cell.Right.Right;
-              if(targetCell.Up != null && targetCell.Up.ChildItem.Type == cellType) 
+              if(targetCell.Up.IsNotNullOrEmpty() && targetCell.Up.ChildItem.Type == cellType) 
                 result.Add(new Move(targetCell, targetCell.Up));
-              if(targetCell.Down != null && targetCell.Down.ChildItem.Type == cellType)
+              if(targetCell.Down.IsNotNullOrEmpty() && targetCell.Down.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Down));
-              if(targetCell.Right != null && targetCell.Right.ChildItem.Type == cellType)
+              if(targetCell.Right.IsNotNullOrEmpty() && targetCell.Right.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Right));
             }
           }
 
-          if(cell.Right != null && cell.Right.Right != null && cell.Right.Right.ChildItem.Type == cellType) {
+          if(cell.Right.IsNotNullOrEmpty() && cell.Right.Right.IsNotNullOrEmpty() && cell.Right.Right.ChildItem.Type == cellType) {
             var targetCell = cell.Right;
-            if(targetCell.Up != null && targetCell.Up.ChildItem.Type == cellType)
+            if(targetCell.Up.IsNotNullOrEmpty() && targetCell.Up.ChildItem.Type == cellType)
               result.Add(new Move(targetCell, targetCell.Up));
-            if(targetCell.Down != null && targetCell.Down.ChildItem.Type == cellType)
+            if(targetCell.Down.IsNotNullOrEmpty() && targetCell.Down.ChildItem.Type == cellType)
               result.Add(new Move(targetCell, targetCell.Down));
           }
 
-          if(cell.Up != null && cell.Up.ChildItem.Type == cellType) {
-            if(cell.Down != null) {
+          if(cell.Up.IsNotNullOrEmpty() && cell.Up.ChildItem.Type == cellType) {
+            if(cell.Down.IsNotNullOrEmpty()) {
               var targetCell = cell.Down;
-              if(targetCell.Right != null && targetCell.Right.ChildItem.Type == cellType)
+              if(targetCell.Right.IsNotNullOrEmpty() && targetCell.Right.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Right));
-              if(targetCell.Down != null && targetCell.Down.ChildItem.Type == cellType)
+              if(targetCell.Down.IsNotNullOrEmpty() && targetCell.Down.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Down));
-              if(targetCell.Left != null && targetCell.Left.ChildItem.Type == cellType)
+              if(targetCell.Left.IsNotNullOrEmpty() && targetCell.Left.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Left));
             }
-            if(cell.Up.Up != null) {
+            if(cell.Up.Up.IsNotNullOrEmpty()) {
               var targetCell = cell.Up.Up;
-              if(targetCell.Up != null && targetCell.Up.ChildItem.Type == cellType)
+              if(targetCell.Up.IsNotNullOrEmpty() && targetCell.Up.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Up));
-              if(targetCell.Left != null && targetCell.Left.ChildItem.Type == cellType)
+              if(targetCell.Left.IsNotNullOrEmpty() && targetCell.Left.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Left));
-              if(targetCell.Right != null && targetCell.Right.ChildItem.Type == cellType)
+              if(targetCell.Right.IsNotNullOrEmpty() && targetCell.Right.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Right));
             }
           }
 
-          if(cell.Up != null && cell.Up.Up != null && cell.Up.Up.ChildItem.Type == cellType) {
+          if(cell.Up.IsNotNullOrEmpty() && cell.Up.Up.IsNotNullOrEmpty() && cell.Up.Up.ChildItem.Type == cellType) {
             var targetCell = cell.Up;
-            if(targetCell.Left != null && targetCell.Left.ChildItem.Type == cellType)
+            if(targetCell.Left.IsNotNullOrEmpty() && targetCell.Left.ChildItem.Type == cellType)
               result.Add(new Move(targetCell, targetCell.Left));
-            if(targetCell.Right != null && targetCell.Right.ChildItem.Type == cellType)
+            if(targetCell.Right.IsNotNullOrEmpty() && targetCell.Right.ChildItem.Type == cellType)
               result.Add(new Move(targetCell, targetCell.Right));
           }
 

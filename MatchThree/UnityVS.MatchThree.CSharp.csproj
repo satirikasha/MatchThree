@@ -93,6 +93,7 @@
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
     <Compile Include="Assets\Scripts\MatchThree\BoardController.cs" />
     <Compile Include="Assets\Scripts\MatchThree\BoardInput.cs" />
+    <Compile Include="Assets\Scripts\MatchThree\CellUtils.cs" />
     <Compile Include="Assets\Scripts\MatchThree\Cell.cs" />
     <Compile Include="Assets\Scripts\MatchThree\Combination.cs" />
     <Compile Include="Assets\Scripts\MatchThree\Combinations\Three.cs" />

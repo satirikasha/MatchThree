@@ -34,13 +34,13 @@
       if(ReceivingSwipe) {
         var delta = eventData.position - eventData.pressPosition;
         if((SWIPE_LENGTH_RATIO * Screen.width).deg2() < delta.sqrMagnitude) {
+          ReceivingSwipe = false;
           if(Mathf.Abs(delta.x) > Mathf.Abs(delta.y)) {
             OnSwipe(eventData.pressPosition, delta.x > 0 ? Vector2.right : Vector2.left);
           }
           else {
             OnSwipe(eventData.pressPosition, delta.y > 0 ? Vector2.up : Vector2.down);
           }
-          ReceivingSwipe = false;
         }
       }
     }

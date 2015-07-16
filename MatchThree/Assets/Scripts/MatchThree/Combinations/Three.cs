@@ -9,6 +9,7 @@
     public static bool IsCombination(out Combination result, Cell input) {
       result = new Three();
       result.Type = input.ChildItem.Type;
+      result.Center = input;
       if(input.Up != null && input.Up.ChildItem.Type == result.Type && input.Down != null && input.Down.ChildItem.Type == result.Type) {
         result.Cells = new Cell[] { input.Up, input, input.Down };
         return true;
