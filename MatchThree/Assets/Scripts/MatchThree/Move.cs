@@ -8,6 +8,8 @@
     public Cell From { get; set; }
     public Cell To { get; set; }
 
+    private bool _Applied = false;
+
     public Move(Cell from, Cell to) {
       From = from;
       To = to;
@@ -22,9 +24,21 @@
     }
 
     public void Apply() {
-      var toItem = To.ChildItem;
-      To.ChildItem = From.ChildItem;
-      From.ChildItem = toItem;
+      if(!_Applied) {
+        var toItem = To.ChildItem;
+        To.ChildItem = From.ChildItem;
+        From.ChildItem = toItem;
+        _Applied = true;
+      }
+    }
+
+    public void Revert() {
+      if(_Applied) {
+        var toItem = To.ChildItem;
+        To.ChildItem = From.ChildItem;
+        From.ChildItem = toItem;
+        _Applied = false;
+      }
     }
   }
 }

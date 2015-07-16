@@ -98,20 +98,21 @@
           toCell = fromCell.Up;
         else throw new Exception("Bad snap direction vector");
         Move move = new Move(fromCell, toCell);
-        if(GetPossibleMoves().Contains(move))
-          move.Apply();
-        else
-          return;
+        move.Apply();
         Combination combination;
-        move.From.ChildItem.GetComponent<SpriteRenderer>().color = Color.red;
-        move.To.ChildItem.GetComponent<SpriteRenderer>().color = Color.green;
-        //if(Combination.Detect(out combination, move.To)) {
-        //  combination.Remove();
-        //}
-        //move.To.ChildItem.GetComponent<SpriteRenderer>().color = Color.grey;
-        //if(Combination.Detect(out combination, move.From)) {
-        //  combination.Remove();
-        //}
+        var moveValid = false;
+        if(Combination.Detect(out combination, move.To)) {
+          combination.Remove();
+          moveValid = true;
+        }
+        if(Combination.Detect(out combination, move.From)) {
+          combination.Remove();
+          moveValid = true;
+        }
+        if(!moveValid) {
+          move.Revert();
+          Debug.Log("Reverted");
+        }
       };
     }
 

@@ -6,26 +6,32 @@
   using Combinations;
   using UnityEngine;
 
-  public abstract class Combination {
+  public class Combination {
 
     public ItemType Type;
-
     public Cell Center;
-
     public Cell[] Cells;
 
-    public static bool Detect(out Combination result, Cell input) {
-      result = new Three();
-      result.Cells = GetAllNeighboursOfSameType(input).ToArray();
-      return true;
-      //result = null;
-      //if(Three.IsCombination(out result, input)) {
-      //  return true;
-      //}
-      //else {
-      //  result = null;
-      //  return false;
-      //}
+    public Combination() { }
+
+    public Combination(Combination combination) {
+      Type = combination.Type;
+      Center = combination.Center;
+      Cells = combination.Cells;
+    }
+
+    public static bool Detect(out Combination combination, Cell input) {
+      combination = new Combination();
+      combination.Cells = GetAllNeighboursOfSameType(input).ToArray();
+      combination.Center = input;
+      combination.Type = input.ChildItem.Type;
+
+      if(Three.IsCombination(ref combination)) {
+        return true;
+      }
+
+      combination = null;
+      return false;
     }
 
     private static HashSet<Cell> GetAllNeighboursOfSameType(Cell input) {

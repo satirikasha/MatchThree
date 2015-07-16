@@ -10,8 +10,10 @@
       }
       set {
         _ChildItem = value;
-        if(value != null)
+        if(value != null) {
           _ChildItem.transform.position = this.transform.position;
+          _ChildItem.ParentCell = this;
+        }
       }
     }
     private Item _ChildItem;
