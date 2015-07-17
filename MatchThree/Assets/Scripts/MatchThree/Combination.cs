@@ -25,13 +25,19 @@
       combination.Cells = GetAllNeighboursOfSameType(input).ToArray();
       combination.Center = input;
       combination.Type = input.ChildItem.Type;
+      bool result = false;
 
       if(Three.IsCombination(ref combination)) {
-        return true;
+        var three = new Three(combination);
+        combination = three;
+        if(Four.IsCombination(ref three))
+          Debug.Log("Four detected");
+        result = true;
       }
 
-      combination = null;
-      return false;
+      if(!result)
+        combination = null;
+      return result;
     }
 
     private static HashSet<Cell> GetAllNeighboursOfSameType(Cell input) {
