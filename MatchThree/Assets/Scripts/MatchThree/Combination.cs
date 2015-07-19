@@ -25,16 +25,28 @@
       combination.Cells = GetAllNeighboursOfSameType(input).ToArray();
       combination.Center = input;
       combination.Type = input.ChildItem.Type;
-      bool result = false;
 
       if(Three.IsCombination(ref combination)) {
-        var three = new Three(combination);
+        var three = combination as Three;
         combination = three;
-        if(Four.IsCombination(ref three))
-          Debug.Log("Four detected");
-        result = true;
+        if(Four.IsCombination(ref three)) {
+          var four = three as Four;
+          combination = four;
+          if(Five.IsCombination(ref four)) {
+            var five = four as Five;
+            combination = five;
+          }
+        }
+        three = combination as Three;
+        if(combination.GetType() != typeof(Five) && Angle.IsCombination(ref three)) {
+          var angle = three as Angle;
+          combination = angle;
+        }
       }
 
+      Debug.Log(combination.GetType().Name);
+
+      var result = combination.GetType() != typeof(Combination);
       if(!result)
         combination = null;
       return result;
@@ -81,7 +93,7 @@
     public void Remove() {
       foreach(var cell in Cells)
         if(cell.IsNotNullOrEmpty())
-          cell.ChildItem.Hide();
+          cell.RemoveItem();
     }
   }
 }

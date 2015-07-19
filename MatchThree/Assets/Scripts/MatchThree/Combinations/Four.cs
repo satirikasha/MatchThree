@@ -25,17 +25,17 @@
     public static bool IsCombination(ref Three three) {
       var result = false;
       var four = new Four(three);
-      #region Detection
       foreach(var variant in four.ThreeVariants) {
         if(variant.Orientation == Orientation.Horizontal && variant.Cells[2].Right.IsNotNullOrEmpty() && variant.Cells[2].Right.ChildItem.Type == four.Type) {
           four.FourVariants.Add(new Variant() { Cells = new Cell[] { variant.Cells[0], variant.Cells[1], variant.Cells[2], variant.Cells[2].Right }, Orientation = Orientation.Horizontal });
           result = true;
         }
+        if(variant.Orientation == Orientation.Vertical && variant.Cells[2].Up.IsNotNullOrEmpty() && variant.Cells[2].Up.ChildItem.Type == four.Type) {
+          four.FourVariants.Add(new Variant() { Cells = new Cell[] { variant.Cells[0], variant.Cells[1], variant.Cells[2], variant.Cells[2].Up }, Orientation = Orientation.Vertical });
+          result = true;
+        }
       }
-      #endregion
-      Debug.Log("Found " + four.FourVariants.Count + " variants");
-      if(result)
-        three = four;
+      three = result ? four : null;
       return result;
     }
 

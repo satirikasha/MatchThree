@@ -12,9 +12,6 @@
     [HideInInspector]
     public ItemType Type;
 
-    [HideInInspector]
-    public Cell ParentCell;
-
     public static Item GetInstance(ItemType type) {
       Item result;
       if(!ItemCache.TryGetValue(type, out result)) {
@@ -31,11 +28,8 @@
     }
 
     public void Hide() {
-        this.transform.parent = ItemFactory.Current.transform;
-        ParentCell.ChildItem = null;
-        if(ParentCell != null)
-          ParentCell = null;
-        this.gameObject.SetActive(false);
+      this.transform.parent = ItemFactory.Current.transform;
+      this.gameObject.SetActive(false);
     }
   }
 }

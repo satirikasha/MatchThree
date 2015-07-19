@@ -25,7 +25,6 @@
       var result = false;
       var three = new Three(combination);
       var center = three.Center;
-      #region Detection
       if(center.Up.IsNotNullOrEmpty() && center.Up.ChildItem.Type == three.Type && center.Down.IsNotNullOrEmpty() && center.Down.ChildItem.Type == three.Type) {
         three.ThreeVariants.Add(new Variant() { Cells = new Cell[] { center.Down, center, center.Up }, Orientation = Orientation.Vertical });
         result = true;
@@ -50,7 +49,6 @@
         three.ThreeVariants.Add(new Variant() { Cells = new Cell[] { center, center.Right, center.Right.Right }, Orientation = Orientation.Horizontal });
         result = true;
       }
-      #endregion
       if(result)
         combination = three;
       return result;

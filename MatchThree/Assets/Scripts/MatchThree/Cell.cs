@@ -12,7 +12,6 @@
         _ChildItem = value;
         if(value != null) {
           _ChildItem.transform.position = this.transform.position;
-          _ChildItem.ParentCell = this;
         }
       }
     }
@@ -55,5 +54,12 @@
       }
     }
     private Cell _Left;
+
+    public void RemoveItem() {
+      if(ChildItem != null) {
+        ChildItem.Hide();
+        ChildItem = null;
+      }
+    }
   }
 }

@@ -75,7 +75,6 @@
           }
           var item = ItemFactory.Current.GetItem(itemType);
           cell.ChildItem = item;
-          item.ParentCell = cell;
           item.transform.parent = ItemsContainer;
           item.transform.localPosition = cell.transform.localPosition;
           item.Show();
@@ -111,7 +110,9 @@
         }
         if(!moveValid) {
           move.Revert();
-          Debug.Log("Reverted");
+        }
+        else {
+          NormalizeBoard();
         }
       };
     }
@@ -128,7 +129,7 @@
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
           var cell = Board[i, j];
           if(cell.ChildItem != null)
-            cell.ChildItem.Hide();
+            cell.RemoveItem();
         }
       }
     }
@@ -205,9 +206,28 @@
     }
 
     public void NormalizeBoard() {
-      for(int i = 0; i < CELLS_COUNT_X; i++) {
-        for(int j = 0; j < CELLS_COUNT_Y; j++) {
-
+      var boardStateChanged = true;
+      Cell cell;
+      while(boardStateChanged) {
+        boardStateChanged = false;
+        for(int i = 0; i < CELLS_COUNT_X; i++) {
+          for(int j = 0; j < CELLS_COUNT_Y; j++) {
+            cell = Board[i, j];
+            if(cell.IsNotNullOrEmpty()) {
+              if(cell.Down != null && cell.Down.ChildItem == null) {
+                cell.Down.ChildItem = cell.ChildItem;
+                cell.ChildItem = null;
+                boardStateChanged = true;
+              }
+            }
+            if(j == CELLS_COUNT_Y - 1 && cell != null && cell.ChildItem == null) {
+              var item = ItemFactory.Current.GetItem(itemTypes.GetRandomElement());
+              cell.ChildItem = item;
+              item.transform.parent = ItemsContainer;
+              item.transform.localPosition = cell.transform.localPosition;
+              item.Show();
+            }
+          }
         }
       }
     }
