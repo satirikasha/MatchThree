@@ -25,10 +25,18 @@
     }
     private static Dictionary<ItemType, Item> ItemCache = new Dictionary<ItemType, Item>();
 
+    /// <summary>
+    /// Shows the item, requires an assigned parent cell.
+    /// </summary>
     public void Show() {
+      this.transform.parent = BoardController.Current.ItemsContainer;
+      this.transform.localPosition = ParentCell.transform.localPosition;
       this.gameObject.SetActive(true);
     }
 
+    /// <summary>
+    /// Hides the item
+    /// </summary>
     public void Hide() {
       ParentCell.ChildItem = null;
       this.transform.parent = ItemFactory.Current.transform;

@@ -18,6 +18,10 @@
       foreach(var variant1 in angle.ThreeVariants) {
         foreach(var variant2 in angle.ThreeVariants) {
           if(variant1.Orientation != variant2.Orientation) {
+            HashSet<Cell> cells = new HashSet<Cell>();
+            cells.UnionWith(variant1.Cells);
+            cells.UnionWith(variant2.Cells);
+            angle.Cells = cells.ToArray();
             three = angle;
             return true;
           }

@@ -25,18 +25,14 @@
 
     public void Apply() {
       if(!_Applied) {
-        var toItem = To.ChildItem;
-        To.ChildItem = From.ChildItem;
-        From.ChildItem = toItem;
+        To.SwapItems(From);
         _Applied = true;
       }
     }
 
     public void Revert() {
       if(_Applied) {
-        var toItem = To.ChildItem;
-        To.ChildItem = From.ChildItem;
-        From.ChildItem = toItem;
+        To.SwapItems(From);
         _Applied = false;
       }
     }

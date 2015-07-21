@@ -130,5 +130,9 @@
     public static T GetRandomElement<T>(this ICollection<T> source) {
       return source.ElementAt(Random.Range(0, source.Count));
     }
+
+    public static Color GetRandomColor() {
+      return new Color(Random.value, Random.value, Random.value);
+    }
   }
 }

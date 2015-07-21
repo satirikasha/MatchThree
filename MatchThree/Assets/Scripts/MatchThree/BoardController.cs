@@ -75,8 +75,6 @@
           }
           var item = ItemFactory.Current.GetItem(itemType);
           cell.ChildItem = item;
-          item.transform.parent = ItemsContainer;
-          item.transform.localPosition = cell.transform.localPosition;
           item.Show();
         }
       }
@@ -99,32 +97,32 @@
         Move move = new Move(fromCell, toCell);
         move.Apply();
         Combination combination;
-        var moveValid = false;
+        List<Cell> affectedCells = new List<Cell>();
         if(Combination.Detect(out combination, move.To)) {
           combination.Remove();
-          moveValid = true;
+          affectedCells.AddRange(combination.Cells);
         }
         if(Combination.Detect(out combination, move.From)) {
           combination.Remove();
-          moveValid = true;
+          affectedCells.AddRange(combination.Cells);
         }
-        if(!moveValid) {
+        if(affectedCells.Count == 0) {
           move.Revert();
         }
         else {
-          NormalizeBoard();
+          NormalizeBoard(affectedCells);
         }
       };
     }
 
-    private Cell GetCell(Vector2 position) {
+    private Cell GetCell(Vector2 screenPosition) {
       var offset = new Vector2(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
-      Vector2 pos = Camera.main.ScreenToWorldPoint(position);
+      Vector2 pos = Camera.main.ScreenToWorldPoint(screenPosition);
       pos -= this.transform.position.ToVector2() + offset;
       return Board[Mathf.RoundToInt((pos.x - CellWidth / 2) / CellWidth), Mathf.RoundToInt((pos.y - CellHeight / 2) / CellHeight)];
     }
 
-    private void RemoveItems() {
+    public void RemoveItems() {
       for(int i = 0; i < CELLS_COUNT_X; i++) {
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
           var cell = Board[i, j];
@@ -153,7 +151,7 @@
             }
             if(cell.Right.Right.IsNotNullOrEmpty()) {
               var targetCell = cell.Right.Right;
-              if(targetCell.Up.IsNotNullOrEmpty() && targetCell.Up.ChildItem.Type == cellType) 
+              if(targetCell.Up.IsNotNullOrEmpty() && targetCell.Up.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Up));
               if(targetCell.Down.IsNotNullOrEmpty() && targetCell.Down.ChildItem.Type == cellType)
                 result.Add(new Move(targetCell, targetCell.Down));
@@ -205,40 +203,27 @@
       return result;
     }
 
-    public void NormalizeBoard() {
-      var boardStateChanged = true;
+    public void NormalizeBoard(List<Cell> affectedCells) {
       Cell currentCell;
-      while(boardStateChanged) {
-        boardStateChanged = false;
-        for(int i = 0; i < CELLS_COUNT_X; i++) {
-          for(int j = 0; j < CELLS_COUNT_Y; j++) {
-            currentCell = Board[i, j];
-            if(currentCell.IsNotNullOrEmpty()) {
-              if(currentCell.Down != null && currentCell.Down.ChildItem == null) {
-                currentCell.Down.ChildItem = currentCell.ChildItem;
-                currentCell.ChildItem = null;
-                boardStateChanged = true;
-              }
-            }
-            if(j == CELLS_COUNT_Y - 1 && currentCell != null && currentCell.ChildItem == null) {
-              var item = ItemFactory.Current.GetItem(itemTypes.GetRandomElement());
-              currentCell.ChildItem = item;
-              item.transform.parent = ItemsContainer;
-              item.transform.localPosition = currentCell.transform.localPosition;
-              item.Show();
+      int posX;
+      foreach(var cell in affectedCells) {
+        posX = cell.BoardPosition.x;
+        int loopCount = CELLS_COUNT_Y;
+        while(cell.ChildItem == null) {
+          loopCount--;
+          for(int j = cell.BoardPosition.y; j < CELLS_COUNT_Y - 1; j++) {
+            currentCell = Board[posX, j];
+            currentCell.SwapItems(currentCell.Up);
+          }
+          for(int i = 0; i < CELLS_COUNT_X; i++) {
+            var productionCell = Board[i, CELLS_COUNT_Y - 1];
+            if(productionCell.ChildItem == null) {
+              productionCell.ChildItem = ItemFactory.Current.GetItem(itemTypes.GetRandomElement());
+              productionCell.ChildItem.Show();
             }
           }
-        }
-
-        if(!boardStateChanged) {
-          Combination combination;
-          foreach(var cell in Board) {
-            if(Combination.Detect(out combination, cell)) {
-              combination.Remove();
-              boardStateChanged = true;
-              break;
-            }
-          }
+          if(loopCount == 0)
+            break;
         }
       }
     }

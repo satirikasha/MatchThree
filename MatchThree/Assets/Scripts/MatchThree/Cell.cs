@@ -23,6 +23,7 @@
 
     public Position BoardPosition { get; set; }
 
+    #region Navigation properties
     public Cell Up {
       get {
         if(_Up == null && BoardPosition.y < BoardController.CELLS_COUNT_Y - 1)
@@ -58,6 +59,13 @@
       }
     }
     private Cell _Left;
+    #endregion
+
+    public void SwapItems(Cell cell) {
+      var item = cell.ChildItem;
+      cell.ChildItem = this.ChildItem;
+      this.ChildItem = item;
+    }
 
     public void RemoveItem() {
       if(ChildItem != null) {

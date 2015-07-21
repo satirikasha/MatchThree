@@ -35,7 +35,10 @@
           result = true;
         }
       }
-      three = result ? four : null;
+      if(result) {
+        four.Cells = four.FourVariants.FirstOrDefault().Cells;
+        three = four;
+      }
       return result;
     }
 

@@ -5,6 +5,7 @@
   using System.Text;
   using Combinations;
   using UnityEngine;
+  using Engine.Utils;
 
   public class Combination {
 
@@ -24,7 +25,7 @@
       combination = new Combination();
       if(!input.IsNotNullOrEmpty())
         return false;
-      combination.Cells = GetAllNeighboursOfSameType(input).ToArray();
+      combination.Cells = new Cell[0];
       combination.Center = input;
       combination.Type = input.ChildItem.Type;
 
@@ -54,7 +55,7 @@
       return result;
     }
 
-    private static HashSet<Cell> GetAllNeighboursOfSameType(Cell input) {
+    public static HashSet<Cell> GetAllNeighboursOfSameType(Cell input) {
       HashSet<Cell> result = new HashSet<Cell>();
       HashSet<Cell> cellsToCheck = new HashSet<Cell>();
       result.Add(input);
@@ -93,10 +94,11 @@
     }
 
     public void Remove() {
+      var color = Utils.GetRandomColor();//!!
       foreach(var cell in Cells)
         if(cell.IsNotNullOrEmpty()) {
           cell.RemoveItem();
-          cell.GetComponent<SpriteRenderer>().color = Color.green;
+          cell.GetComponent<SpriteRenderer>().color = color;//!!
         }
     }
   }

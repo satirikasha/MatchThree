@@ -49,8 +49,10 @@
         three.ThreeVariants.Add(new Variant() { Cells = new Cell[] { center, center.Right, center.Right.Right }, Orientation = Orientation.Horizontal });
         result = true;
       }
-      if(result)
+      if(result) {
+        three.Cells = three.ThreeVariants.FirstOrDefault().Cells;
         combination = three;
+      }
       return result;
     }
 
