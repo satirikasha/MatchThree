@@ -207,25 +207,36 @@
 
     public void NormalizeBoard() {
       var boardStateChanged = true;
-      Cell cell;
+      Cell currentCell;
       while(boardStateChanged) {
         boardStateChanged = false;
         for(int i = 0; i < CELLS_COUNT_X; i++) {
           for(int j = 0; j < CELLS_COUNT_Y; j++) {
-            cell = Board[i, j];
-            if(cell.IsNotNullOrEmpty()) {
-              if(cell.Down != null && cell.Down.ChildItem == null) {
-                cell.Down.ChildItem = cell.ChildItem;
-                cell.ChildItem = null;
+            currentCell = Board[i, j];
+            if(currentCell.IsNotNullOrEmpty()) {
+              if(currentCell.Down != null && currentCell.Down.ChildItem == null) {
+                currentCell.Down.ChildItem = currentCell.ChildItem;
+                currentCell.ChildItem = null;
                 boardStateChanged = true;
               }
             }
-            if(j == CELLS_COUNT_Y - 1 && cell != null && cell.ChildItem == null) {
+            if(j == CELLS_COUNT_Y - 1 && currentCell != null && currentCell.ChildItem == null) {
               var item = ItemFactory.Current.GetItem(itemTypes.GetRandomElement());
-              cell.ChildItem = item;
+              currentCell.ChildItem = item;
               item.transform.parent = ItemsContainer;
-              item.transform.localPosition = cell.transform.localPosition;
+              item.transform.localPosition = currentCell.transform.localPosition;
               item.Show();
+            }
+          }
+        }
+
+        if(!boardStateChanged) {
+          Combination combination;
+          foreach(var cell in Board) {
+            if(Combination.Detect(out combination, cell)) {
+              combination.Remove();
+              boardStateChanged = true;
+              break;
             }
           }
         }
@@ -233,6 +244,10 @@
     }
 
     public void Shuffle() {
+      //!!
+      foreach(var cell in Board)
+        cell.GetComponent<SpriteRenderer>().color = Color.white;
+      //!!
       RemoveItems();
       PrepareItems();
     }

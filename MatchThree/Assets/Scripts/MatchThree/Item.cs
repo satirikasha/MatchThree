@@ -10,6 +10,8 @@
     public const string ITEMS_FOLDER_PATH = "Prefabs/Items/";
 
     [HideInInspector]
+    public Cell ParentCell;
+    [HideInInspector]
     public ItemType Type;
 
     public static Item GetInstance(ItemType type) {
@@ -28,6 +30,7 @@
     }
 
     public void Hide() {
+      ParentCell.ChildItem = null;
       this.transform.parent = ItemFactory.Current.transform;
       this.gameObject.SetActive(false);
     }

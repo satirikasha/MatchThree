@@ -9,8 +9,12 @@
         return _ChildItem;
       }
       set {
+        if(_ChildItem != null && ReferenceEquals(_ChildItem.ParentCell, this)) {
+          _ChildItem.ParentCell = null;
+        }
         _ChildItem = value;
-        if(value != null) {
+        if(_ChildItem != null) {
+          _ChildItem.ParentCell = this;
           _ChildItem.transform.position = this.transform.position;
         }
       }
@@ -58,7 +62,6 @@
     public void RemoveItem() {
       if(ChildItem != null) {
         ChildItem.Hide();
-        ChildItem = null;
       }
     }
   }

@@ -22,6 +22,8 @@
 
     public static bool Detect(out Combination combination, Cell input) {
       combination = new Combination();
+      if(!input.IsNotNullOrEmpty())
+        return false;
       combination.Cells = GetAllNeighboursOfSameType(input).ToArray();
       combination.Center = input;
       combination.Type = input.ChildItem.Type;
@@ -92,8 +94,10 @@
 
     public void Remove() {
       foreach(var cell in Cells)
-        if(cell.IsNotNullOrEmpty())
+        if(cell.IsNotNullOrEmpty()) {
           cell.RemoveItem();
+          cell.GetComponent<SpriteRenderer>().color = Color.green;
+        }
     }
   }
 }
