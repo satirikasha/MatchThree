@@ -205,6 +205,7 @@
 
     public void NormalizeBoard(List<Cell> affectedCells) {
       Cell currentCell;
+      HashSet<Cell> cellsToCheck = new HashSet<Cell>();
       int posX;
       foreach(var cell in affectedCells) {
         posX = cell.BoardPosition.x;
@@ -214,6 +215,9 @@
           for(int j = cell.BoardPosition.y; j < CELLS_COUNT_Y - 1; j++) {
             currentCell = Board[posX, j];
             currentCell.SwapItems(currentCell.Up);
+            cellsToCheck.Add(currentCell);
+            if(j == CELLS_COUNT_Y - 2)
+              cellsToCheck.Add(currentCell.Up);
           }
           for(int i = 0; i < CELLS_COUNT_X; i++) {
             var productionCell = Board[i, CELLS_COUNT_Y - 1];
@@ -226,6 +230,16 @@
             break;
         }
       }
+      Combination combination;
+      List<Cell> newCellsAffected = new List<Cell>();
+      foreach(var cell in cellsToCheck) {
+        if(Combination.Detect(out combination, cell)) {
+          combination.Remove();
+          newCellsAffected.AddRange(combination.Cells);
+        }
+      }
+      if(newCellsAffected.Count != 0)
+        NormalizeBoard(newCellsAffected);
     }
 
     public void Shuffle() {
