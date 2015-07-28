@@ -1,8 +1,14 @@
 ﻿namespace Elements.Game.MatchThree {
   using UnityEngine;
   using System.Collections;
+  using Engine.Utils;
+  using System;
 
-  public class Cell : MonoBehaviour {
+  public class Cell: MonoBehaviour {
+
+    public event Action<Cell> OnChildItemChanged;
+
+    public bool CanGenerateItems;
 
     public Item ChildItem {
       get {
@@ -14,6 +20,7 @@
         }
         _ChildItem = value;
         if(_ChildItem != null) {
+          OnChildItemChanged(this);
           _ChildItem.ParentCell = this;
           _ChildItem.transform.position = this.transform.position;
         }
@@ -35,7 +42,7 @@
 
     public Cell Down {
       get {
-        if(_Down == null && BoardPosition.y > 0 )
+        if(_Down == null && BoardPosition.y > 0)
           _Down = BoardController.Current.Board[BoardPosition.x, BoardPosition.y - 1];
         return _Down;
       }
@@ -60,6 +67,17 @@
     }
     private Cell _Left;
     #endregion
+
+    void Update() {
+      if(Down != null && Down.ChildItem == null) {
+        Down.ChildItem = ChildItem;
+        ChildItem = null;
+      }
+      if(CanGenerateItems && ChildItem == null) {
+        ChildItem = ItemFactory.Current.GetItem(BoardController.Current.ItemTypes.GetRandomElement());
+        ChildItem.Show();
+      }
+    }
 
     public void SwapItems(Cell cell) {
       var item = cell.ChildItem;

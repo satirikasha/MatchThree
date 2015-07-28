@@ -26,9 +26,14 @@
 
     public GameObject CellPrefab;
 
+    public bool IsInitialized { get; private set; }
+
     public Cell[,] Board { get; private set; }
 
-    private List<ItemType> itemTypes;
+    public List<ItemType> ItemTypes { get; private set; }
+
+    public HashSet<Cell> RecentlyChangedCells { get; private set; }
+    public int RecentlyChangedCellsCount;
 
     void Awake() {
       _Current = this;
@@ -37,19 +42,36 @@
       PrepareCells();
       PrepareItems();
       PrepareInput();
+      IsInitialized = true;
+    }
+
+    void Update() {
+      if(RecentlyChangedCells.Count != RecentlyChangedCellsCount) {
+        RecentlyChangedCellsCount = RecentlyChangedCells.Count;
+      }
+      else {
+        var combination = new Combination();
+        foreach(var cell in RecentlyChangedCells) {
+          if(Combination.Detect(out combination, cell))
+            combination.Remove();
+        }
+        RecentlyChangedCells = new HashSet<Cell>();
+        RecentlyChangedCellsCount = 0;
+      }
     }
 
     private void PrepareItemTypes() {
-      itemTypes = Enum.GetValues(typeof(ItemType)).Cast<ItemType>().ToList().GetRange(0, ItemsCount);
+      ItemTypes = Enum.GetValues(typeof(ItemType)).Cast<ItemType>().ToList().GetRange(0, ItemsCount);
     }
 
     private void PrepareFactory() {
       ItemFactory.Instantiate();
-      itemTypes.ForEach(_ => ItemFactory.Current.AddItems(_, 50));
+      ItemTypes.ForEach(_ => ItemFactory.Current.AddItems(_, 50));
     }
 
     private void PrepareCells() {
       Board = new Cell[CELLS_COUNT_X, CELLS_COUNT_Y];
+      RecentlyChangedCells = new HashSet<Cell>();
       var offset = new Vector3(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
       for(int i = 0; i < CELLS_COUNT_X; i++) {
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
@@ -57,6 +79,8 @@
           cell.transform.parent = CellsContainer;
           cell.transform.localPosition = new Vector3(i * CellWidth + CellWidth / 2, j * CellHeight + CellHeight / 2, 0) + offset;
           cell.BoardPosition = new Position() { x = i, y = j };
+          cell.CanGenerateItems = j == CELLS_COUNT_Y - 1;
+          cell.OnChildItemChanged += _ => { if(IsInitialized) RecentlyChangedCells.Add(_); };
           Board[i, j] = cell;
         }
       }
@@ -66,16 +90,15 @@
       for(int i = 0; i < CELLS_COUNT_X; i++) {
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
           var cell = Board[i, j];
-          var itemTypesAvailable = new List<ItemType>(itemTypes);
+          var itemTypesAvailable = new List<ItemType>(ItemTypes);
           var itemType = itemTypesAvailable.GetRandomElement();
           while((cell.Left != null && cell.Left.ChildItem.Type == itemType && cell.Left.Left != null && cell.Left.Left.ChildItem.Type == itemType)
              || (cell.Down != null && cell.Down.ChildItem.Type == itemType && cell.Down.Down != null && cell.Down.Down.ChildItem.Type == itemType)) {
             itemTypesAvailable.Remove(itemType);
             itemType = itemTypesAvailable.GetRandomElement();
           }
-          var item = ItemFactory.Current.GetItem(itemType);
-          cell.ChildItem = item;
-          item.Show();
+          cell.ChildItem = ItemFactory.Current.GetItem(itemType);
+          cell.ChildItem.Show();
         }
       }
     }
@@ -97,20 +120,23 @@
         Move move = new Move(fromCell, toCell);
         move.Apply();
         Combination combination;
-        List<Cell> affectedCells = new List<Cell>();
+        bool isValid = false;
+        //List<Cell> affectedCells = new List<Cell>();
         if(Combination.Detect(out combination, move.To)) {
           combination.Remove();
-          affectedCells.AddRange(combination.Cells);
+          isValid = true;
+         // affectedCells.AddRange(combination.Cells);
         }
         if(Combination.Detect(out combination, move.From)) {
           combination.Remove();
-          affectedCells.AddRange(combination.Cells);
+          isValid = true;
+          //affectedCells.AddRange(combination.Cells);
         }
-        if(affectedCells.Count == 0) {
+        if(!isValid/*affectedCells.Count == 0*/) {
           move.Revert();
         }
         else {
-          NormalizeBoard(affectedCells);
+          //StartCoroutine(NormalizeBoard(affectedCells));
         }
       };
     }
@@ -203,52 +229,57 @@
       return result;
     }
 
-    public void NormalizeBoard(List<Cell> affectedCells) {
-      Cell currentCell;
-      HashSet<Cell> cellsToCheck = new HashSet<Cell>();
-      int posX;
-      foreach(var cell in affectedCells) {
-        posX = cell.BoardPosition.x;
-        int loopCount = CELLS_COUNT_Y;
-        while(cell.ChildItem == null) {
-          loopCount--;
-          for(int j = cell.BoardPosition.y; j < CELLS_COUNT_Y - 1; j++) {
-            currentCell = Board[posX, j];
-            currentCell.SwapItems(currentCell.Up);
-            cellsToCheck.Add(currentCell);
-            if(j == CELLS_COUNT_Y - 2)
-              cellsToCheck.Add(currentCell.Up);
-          }
-          for(int i = 0; i < CELLS_COUNT_X; i++) {
-            var productionCell = Board[i, CELLS_COUNT_Y - 1];
-            if(productionCell.ChildItem == null) {
-              productionCell.ChildItem = ItemFactory.Current.GetItem(itemTypes.GetRandomElement());
-              productionCell.ChildItem.Show();
-            }
-          }
-          if(loopCount == 0)
-            break;
-        }
-      }
-      Combination combination;
-      List<Cell> newCellsAffected = new List<Cell>();
-      foreach(var cell in cellsToCheck) {
-        if(Combination.Detect(out combination, cell)) {
-          combination.Remove();
-          newCellsAffected.AddRange(combination.Cells);
-        }
-      }
-      if(newCellsAffected.Count != 0)
-        NormalizeBoard(newCellsAffected);
-    }
+    //public IEnumerator NormalizeBoard(List<Cell> affectedCells) {
+    //  Cell currentCell;
+    //  HashSet<Cell> cellsToCheck = new HashSet<Cell>();
+    //  int posX;
+    //  yield return new WaitForSeconds(0.5f);
+    //  foreach(var cell in affectedCells) {
+    //    posX = cell.BoardPosition.x;
+    //    int loopCount = CELLS_COUNT_Y;
+    //    while(cell.ChildItem == null) {
+    //      loopCount--;
+    //      for(int j = cell.BoardPosition.y; j < CELLS_COUNT_Y - 1; j++) {
+    //        currentCell = Board[posX, j];
+    //        currentCell.SwapItems(currentCell.Up);
+    //        cellsToCheck.Add(currentCell);
+    //        if(j == CELLS_COUNT_Y - 2)
+    //          cellsToCheck.Add(currentCell.Up);
+    //      }
+    //      for(int i = 0; i < CELLS_COUNT_X; i++) {
+    //        var productionCell = Board[i, CELLS_COUNT_Y - 1];
+    //        if(productionCell.ChildItem == null) {
+    //          productionCell.ChildItem = ItemFactory.Current.GetItem(itemTypes.GetRandomElement());
+    //          productionCell.ChildItem.Show();
+    //        }
+    //      }
+    //      if(loopCount == 0)
+    //        break;
+    //    }
+    //  }
+    //  Combination combination;
+    //  List<Cell> newCellsAffected = new List<Cell>();
+    //  foreach(var cell in cellsToCheck) {
+    //    if(Combination.Detect(out combination, cell)) {
+    //      combination.Remove();
+    //      newCellsAffected.AddRange(combination.Cells);
+    //    }
+    //  }
+    //  if(newCellsAffected.Count != 0) {
+    //    yield return null;
+    //    StartCoroutine(NormalizeBoard(newCellsAffected));
+    // }
+    //}
 
     public void Shuffle() {
       //!!
       foreach(var cell in Board)
         cell.GetComponent<SpriteRenderer>().color = Color.white;
       //!!
+      IsInitialized = false;
       RemoveItems();
       PrepareItems();
+      IsInitialized = true;
     }
 
     public void RandomMove() {

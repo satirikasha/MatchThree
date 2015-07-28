@@ -1,0 +1,29 @@
+Mono path[0] = 'C:/__GitHub/MatchThree/MatchThree/Elements_Data/Managed'
+Mono path[1] = 'C:/__GitHub/MatchThree/MatchThree/Elements_Data/Mono'
+Mono config path = 'C:/__GitHub/MatchThree/MatchThree/Elements_Data/Mono/etc'
+PlayerConnection initialized from C:/__GitHub/MatchThree/MatchThree/Elements_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55147
+Multi-casting "[IP] 192.168.1.46 [Port] 55147 [Flags] 2 [Guid] 2853499653 [EditorId] 484610046 [Version] 1048832 [Id] WindowsPlayer(MEGA-PC) [Debug] 0" to [225.0.0.222:54997]...
+PlayerConnection already initialized - listening to [192.168.1.46:55147]
+Initialize engine version: 5.1.1f1 (2046fc06d4d8)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics 4600 (ID=0x416)
+    Vendor:   Intel
+    VRAM:     128 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+- Completed reload, in  0.443 seconds
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.

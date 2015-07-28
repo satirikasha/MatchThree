@@ -47,7 +47,9 @@
         }
       }
 
-      Debug.Log(combination.GetType().Name);
+      var resultName = combination.GetType().Name;
+      if(resultName != "Combination")
+        Debug.Log(resultName);
 
       var result = combination.GetType() != typeof(Combination);
       if(!result)
