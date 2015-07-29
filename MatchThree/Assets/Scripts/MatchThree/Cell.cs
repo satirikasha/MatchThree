@@ -4,6 +4,7 @@
   using Engine.Utils;
   using System;
 
+  [Serializable]
   public class Cell: MonoBehaviour {
 
     public event Action<Cell> OnChildItemChanged;
@@ -26,6 +27,7 @@
         }
       }
     }
+    [NonSerialized]
     private Item _ChildItem;
 
     public Position BoardPosition { get; set; }
@@ -34,7 +36,7 @@
     public Cell Up {
       get {
         if(_Up == null && BoardPosition.y < BoardController.CELLS_COUNT_Y - 1)
-          _Up = BoardController.Current.Board[BoardPosition.x, BoardPosition.y + 1];
+          _Up = BoardController.Current.Board.Cells[BoardPosition.x, BoardPosition.y + 1];
         return _Up;
       }
     }
@@ -43,7 +45,7 @@
     public Cell Down {
       get {
         if(_Down == null && BoardPosition.y > 0)
-          _Down = BoardController.Current.Board[BoardPosition.x, BoardPosition.y - 1];
+          _Down = BoardController.Current.Board.Cells[BoardPosition.x, BoardPosition.y - 1];
         return _Down;
       }
     }
@@ -52,7 +54,7 @@
     public Cell Right {
       get {
         if(_Right == null && BoardPosition.x < BoardController.CELLS_COUNT_X - 1)
-          _Right = BoardController.Current.Board[BoardPosition.x + 1, BoardPosition.y];
+          _Right = BoardController.Current.Board.Cells[BoardPosition.x + 1, BoardPosition.y];
         return _Right;
       }
     }
@@ -61,7 +63,7 @@
     public Cell Left {
       get {
         if(_Left == null && BoardPosition.x > 0)
-          _Left = BoardController.Current.Board[BoardPosition.x - 1, BoardPosition.y];
+          _Left = BoardController.Current.Board.Cells[BoardPosition.x - 1, BoardPosition.y];
         return _Left;
       }
     }
@@ -74,7 +76,7 @@
         ChildItem = null;
       }
       if(CanGenerateItems && ChildItem == null) {
-        ChildItem = ItemFactory.Current.GetItem(BoardController.Current.ItemTypes.GetRandomElement());
+        ChildItem = ItemFactory.Current.GetItem(BoardController.Current.Board.ItemTypes.GetRandomElement());
         ChildItem.Show();
       }
     }

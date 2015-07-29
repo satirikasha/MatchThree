@@ -28,9 +28,7 @@
 
     public bool IsInitialized { get; private set; }
 
-    public Cell[,] Board { get; private set; }
-
-    public List<ItemType> ItemTypes { get; private set; }
+    public Board Board { get; private set; }
 
     public HashSet<Cell> RecentlyChangedCells { get; private set; }
     public int RecentlyChangedCellsCount;
@@ -61,16 +59,17 @@
     }
 
     private void PrepareItemTypes() {
-      ItemTypes = Enum.GetValues(typeof(ItemType)).Cast<ItemType>().ToList().GetRange(0, ItemsCount);
+      Board = new Board();
+      Board.ItemTypes = Enum.GetValues(typeof(ItemType)).Cast<ItemType>().ToList().GetRange(0, ItemsCount);
     }
 
     private void PrepareFactory() {
       ItemFactory.Instantiate();
-      ItemTypes.ForEach(_ => ItemFactory.Current.AddItems(_, 50));
+      Board.ItemTypes.ForEach(_ => ItemFactory.Current.AddItems(_, 50));
     }
 
     private void PrepareCells() {
-      Board = new Cell[CELLS_COUNT_X, CELLS_COUNT_Y];
+      Board.Cells = new Cell[CELLS_COUNT_X, CELLS_COUNT_Y];
       RecentlyChangedCells = new HashSet<Cell>();
       var offset = new Vector3(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
       for(int i = 0; i < CELLS_COUNT_X; i++) {
@@ -81,7 +80,7 @@
           cell.BoardPosition = new Position() { x = i, y = j };
           cell.CanGenerateItems = j == CELLS_COUNT_Y - 1;
           cell.OnChildItemChanged += _ => { if(IsInitialized) RecentlyChangedCells.Add(_); };
-          Board[i, j] = cell;
+          Board.Cells[i, j] = cell;
         }
       }
     }
@@ -89,8 +88,8 @@
     private void PrepareItems() {
       for(int i = 0; i < CELLS_COUNT_X; i++) {
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
-          var cell = Board[i, j];
-          var itemTypesAvailable = new List<ItemType>(ItemTypes);
+          var cell = Board.Cells[i, j];
+          var itemTypesAvailable = new List<ItemType>(Board.ItemTypes);
           var itemType = itemTypesAvailable.GetRandomElement();
           while((cell.Left != null && cell.Left.ChildItem.Type == itemType && cell.Left.Left != null && cell.Left.Left.ChildItem.Type == itemType)
              || (cell.Down != null && cell.Down.ChildItem.Type == itemType && cell.Down.Down != null && cell.Down.Down.ChildItem.Type == itemType)) {
@@ -125,7 +124,7 @@
         if(Combination.Detect(out combination, move.To)) {
           combination.Remove();
           isValid = true;
-         // affectedCells.AddRange(combination.Cells);
+          // affectedCells.AddRange(combination.Cells);
         }
         if(Combination.Detect(out combination, move.From)) {
           combination.Remove();
@@ -145,13 +144,13 @@
       var offset = new Vector2(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
       Vector2 pos = Camera.main.ScreenToWorldPoint(screenPosition);
       pos -= this.transform.position.ToVector2() + offset;
-      return Board[Mathf.RoundToInt((pos.x - CellWidth / 2) / CellWidth), Mathf.RoundToInt((pos.y - CellHeight / 2) / CellHeight)];
+      return Board.Cells[Mathf.RoundToInt((pos.x - CellWidth / 2) / CellWidth), Mathf.RoundToInt((pos.y - CellHeight / 2) / CellHeight)];
     }
 
     public void RemoveItems() {
       for(int i = 0; i < CELLS_COUNT_X; i++) {
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
-          var cell = Board[i, j];
+          var cell = Board.Cells[i, j];
           if(cell.ChildItem != null)
             cell.RemoveItem();
         }
@@ -163,7 +162,7 @@
       for(int i = 0; i < CELLS_COUNT_X; i++) {
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
           #region Moves detecting
-          var cell = Board[i, j];
+          var cell = Board.Cells[i, j];
           var cellType = cell.ChildItem.Type;
           if(cell.Right.IsNotNullOrEmpty() && cell.Right.ChildItem.Type == cellType) {
             if(cell.Left.IsNotNullOrEmpty()) {
@@ -229,51 +228,9 @@
       return result;
     }
 
-    //public IEnumerator NormalizeBoard(List<Cell> affectedCells) {
-    //  Cell currentCell;
-    //  HashSet<Cell> cellsToCheck = new HashSet<Cell>();
-    //  int posX;
-    //  yield return new WaitForSeconds(0.5f);
-    //  foreach(var cell in affectedCells) {
-    //    posX = cell.BoardPosition.x;
-    //    int loopCount = CELLS_COUNT_Y;
-    //    while(cell.ChildItem == null) {
-    //      loopCount--;
-    //      for(int j = cell.BoardPosition.y; j < CELLS_COUNT_Y - 1; j++) {
-    //        currentCell = Board[posX, j];
-    //        currentCell.SwapItems(currentCell.Up);
-    //        cellsToCheck.Add(currentCell);
-    //        if(j == CELLS_COUNT_Y - 2)
-    //          cellsToCheck.Add(currentCell.Up);
-    //      }
-    //      for(int i = 0; i < CELLS_COUNT_X; i++) {
-    //        var productionCell = Board[i, CELLS_COUNT_Y - 1];
-    //        if(productionCell.ChildItem == null) {
-    //          productionCell.ChildItem = ItemFactory.Current.GetItem(itemTypes.GetRandomElement());
-    //          productionCell.ChildItem.Show();
-    //        }
-    //      }
-    //      if(loopCount == 0)
-    //        break;
-    //    }
-    //  }
-    //  Combination combination;
-    //  List<Cell> newCellsAffected = new List<Cell>();
-    //  foreach(var cell in cellsToCheck) {
-    //    if(Combination.Detect(out combination, cell)) {
-    //      combination.Remove();
-    //      newCellsAffected.AddRange(combination.Cells);
-    //    }
-    //  }
-    //  if(newCellsAffected.Count != 0) {
-    //    yield return null;
-    //    StartCoroutine(NormalizeBoard(newCellsAffected));
-    // }
-    //}
-
     public void Shuffle() {
       //!!
-      foreach(var cell in Board)
+      foreach(var cell in Board.Cells)
         cell.GetComponent<SpriteRenderer>().color = Color.white;
       //!!
       IsInitialized = false;
