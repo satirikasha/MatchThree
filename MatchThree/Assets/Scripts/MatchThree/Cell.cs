@@ -9,8 +9,6 @@
 
     public event Action<Cell> OnChildItemChanged;
 
-    public bool CanGenerateItems;
-
     public Item ChildItem {
       get {
         return _ChildItem;
@@ -31,6 +29,13 @@
     private Item _ChildItem;
 
     public Position BoardPosition { get; set; }
+
+    public bool CanGenerateItems { get { return IsItemGenerator; } }
+    public bool CanMove { get { return !(IsBlocked || IsVoid); } }
+
+    public bool IsItemGenerator;
+    public bool IsVoid;
+    public bool IsBlocked;
 
     #region Navigation properties
     public Cell Up {
@@ -91,6 +96,13 @@
       if(ChildItem != null) {
         ChildItem.Hide();
       }
+    }
+
+    public void ApplyVisuals() {
+      if(IsVoid)
+        IsBlocked = false;
+      this.transform.GetChild(0).gameObject.SetActive(IsBlocked);
+      this.GetComponent<SpriteRenderer>().enabled = IsVoid;
     }
   }
 }

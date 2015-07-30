@@ -59,6 +59,13 @@
     }
 
     /// <summary>
+    /// Принадлежит от min до max
+    /// </summary>
+    public static bool IsBetween(this int value, int min, int max) {
+      return value >= min && value <= max;
+    }
+
+    /// <summary>
     /// Принадлежит от 0 до 1
     /// </summary>
     public static bool IsBetweenOneAndZero(this float value) {

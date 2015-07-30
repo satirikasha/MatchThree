@@ -27,6 +27,8 @@
 
     public Board Board { get; private set; }
 
+    private Cell SelectedCell;
+
     void Awake() {
       _Current = this;
       PrepareCells();
@@ -42,18 +44,57 @@
           cell.transform.parent = CellsContainer;
           cell.transform.localPosition = new Vector3(i * CellWidth + CellWidth / 2, j * CellHeight + CellHeight / 2, 0) + offset;
           cell.BoardPosition = new Position() { x = i, y = j };
-          cell.CanGenerateItems = j == CELLS_COUNT_Y - 1;
+          cell.IsItemGenerator = j == CELLS_COUNT_Y - 1;
           cell.enabled = false;
           Board.Cells[i, j] = cell;
         }
       }
     }
 
-    private Cell GetCell(Vector2 screenPosition) {
+    public Cell GetCell(Vector2 screenPosition) {
       var offset = new Vector2(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
       Vector2 pos = Camera.main.ScreenToWorldPoint(screenPosition);
       pos -= this.transform.position.ToVector2() + offset;
-      return Board.Cells[Mathf.RoundToInt((pos.x - CellWidth / 2) / CellWidth), Mathf.RoundToInt((pos.y - CellHeight / 2) / CellHeight)];
+      var x = Mathf.RoundToInt((pos.x - CellWidth / 2) / CellWidth);
+      var y = Mathf.RoundToInt((pos.y - CellHeight / 2) / CellHeight);
+      return x.IsBetween(0, CELLS_COUNT_X - 1) && y.IsBetween(0, CELLS_COUNT_Y - 1) ? Board.Cells[x, y] : null;
+    }
+
+    public void OnClick(Vector2 position) {
+      Cell cell = GetCell(position);
+      if(cell != null) {
+        if(SelectedCell != null) {
+          if(!ReferenceEquals(SelectedCell, cell)) {
+            DeselectCell(SelectedCell);
+            SelectedCell = cell;
+            SelectCell(SelectedCell);
+          }
+          else {
+            DeselectCell(SelectedCell);
+            SelectedCell = null;
+          }
+        }
+        else {
+          SelectedCell = cell;
+          SelectCell(SelectedCell);
+        }
+      }
+    }
+
+    public void OnDelete() {
+      if(SelectedCell != null) {
+        SelectedCell.IsVoid = true;
+        SelectedCell.ApplyVisuals();
+        SelectedCell = null;
+      }
+    }
+
+    private void SelectCell(Cell cell) {
+      cell.GetComponent<SpriteRenderer>().color = Color.green;
+    }
+
+    private void DeselectCell(Cell cell) {
+      cell.GetComponent<SpriteRenderer>().color = Color.white;
     }
 
     public void RemoveItems() {

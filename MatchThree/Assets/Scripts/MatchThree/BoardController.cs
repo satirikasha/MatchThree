@@ -78,7 +78,7 @@
           cell.transform.parent = CellsContainer;
           cell.transform.localPosition = new Vector3(i * CellWidth + CellWidth / 2, j * CellHeight + CellHeight / 2, 0) + offset;
           cell.BoardPosition = new Position() { x = i, y = j };
-          cell.CanGenerateItems = j == CELLS_COUNT_Y - 1;
+          cell.IsItemGenerator = j == CELLS_COUNT_Y - 1;
           cell.OnChildItemChanged += _ => { if(IsInitialized) RecentlyChangedCells.Add(_); };
           Board.Cells[i, j] = cell;
         }
@@ -107,6 +107,8 @@
         Cell fromCell;
         Cell toCell;
         fromCell = GetCell(pos);
+        if(fromCell == null)
+          return;
         if(dir == Vector2.left)
           toCell = fromCell.Left;
         else if(dir == Vector2.right)
@@ -116,6 +118,8 @@
         else if(dir == Vector2.up)
           toCell = fromCell.Up;
         else throw new Exception("Bad snap direction vector");
+        if(toCell == null)
+          return;
         Move move = new Move(fromCell, toCell);
         move.Apply();
         Combination combination;
@@ -144,7 +148,9 @@
       var offset = new Vector2(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
       Vector2 pos = Camera.main.ScreenToWorldPoint(screenPosition);
       pos -= this.transform.position.ToVector2() + offset;
-      return Board.Cells[Mathf.RoundToInt((pos.x - CellWidth / 2) / CellWidth), Mathf.RoundToInt((pos.y - CellHeight / 2) / CellHeight)];
+      var x = Mathf.RoundToInt((pos.x - CellWidth / 2) / CellWidth);
+      var y = Mathf.RoundToInt((pos.y - CellHeight / 2) / CellHeight);
+      return x.IsBetween(0, CELLS_COUNT_X - 1) && y.IsBetween(0, CELLS_COUNT_Y - 1) ? Board.Cells[x, y] : null;
     }
 
     public void RemoveItems() {
