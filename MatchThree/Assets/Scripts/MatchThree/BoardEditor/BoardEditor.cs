@@ -81,14 +81,6 @@
       }
     }
 
-    public void OnDelete() {
-      if(SelectedCell != null) {
-        SelectedCell.IsVoid = true;
-        SelectedCell.ApplyVisuals();
-        SelectedCell = null;
-      }
-    }
-
     private void SelectCell(Cell cell) {
       cell.GetComponent<SpriteRenderer>().color = Color.green;
     }
@@ -104,6 +96,25 @@
           if(cell.ChildItem != null)
             cell.RemoveItem();
         }
+      }
+    }
+
+    public void New() {
+      Application.LoadLevelAsync(Application.loadedLevel);
+    }
+
+    public void Delete() {
+      if(SelectedCell != null) {
+        SelectedCell.IsVoid = true;
+        SelectedCell.ApplyVisuals();
+        SelectedCell = null;
+      }
+    }
+
+    public void Block() {
+      if(SelectedCell != null) {
+        SelectedCell.IsBlocked = !SelectedCell.IsBlocked;
+        SelectedCell.ApplyVisuals();
       }
     }
   }

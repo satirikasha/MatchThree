@@ -20,7 +20,9 @@
 
     void Update() {
       if(Input.GetKeyDown(KeyCode.Delete))
-        BoardEditor.Current.OnDelete();
+        BoardEditor.Current.Delete();
+      if(Input.GetKeyDown(KeyCode.B))
+        BoardEditor.Current.Block();
     }
 
     public void OnBeginDrag(PointerEventData eventData) {

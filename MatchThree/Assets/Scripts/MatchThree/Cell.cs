@@ -102,7 +102,7 @@
       if(IsVoid)
         IsBlocked = false;
       this.transform.GetChild(0).gameObject.SetActive(IsBlocked);
-      this.GetComponent<SpriteRenderer>().enabled = IsVoid;
+      this.GetComponent<SpriteRenderer>().enabled = !IsVoid;
     }
   }
 }
