@@ -2,16 +2,18 @@
   using UnityEngine;
   using System.Collections;
   using System.Collections.Generic;
+  using System.Windows.Forms;
   using System.Linq;
   using System;
   using Engine.Utils;
   using Random = UnityEngine.Random;
+  using Application = UnityEngine.Application;
 
   public class BoardEditor: BoardController {
 
-    public static BoardEditor Current { get { return BoardController._Current as BoardEditor; } } 
+    public static new BoardEditor Current { get { return BoardController._Current as BoardEditor; } }
 
-    public BoardEditorMode Mode;/* { get; private set; }*/
+    public BoardEditorMode Mode { get; private set; }
 
     private Cell SelectedCell;
 
@@ -19,8 +21,6 @@
       _Current = this;
       PrepareCells();
     }
-
-    new void Update() { } 
 
     private void PrepareCells() {
       Board = new Board();
@@ -38,6 +38,8 @@
         }
       }
     }
+
+    void Update() { }
 
     public Cell GetCell(Vector2 screenPosition) {
       var offset = new Vector2(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
@@ -151,6 +153,10 @@
         DeselectCell(SelectedCell);
         SelectedCell = null;
       }
+    }
+
+    public void Load() {
+      var dialog = new OpenFileDialog().ShowDialog();
     }
 
     public void New() {

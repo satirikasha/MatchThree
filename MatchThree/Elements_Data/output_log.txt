@@ -1,29 +1,76 @@
-Mono path[0] = 'C:/__GitHub/MatchThree/MatchThree/Elements_Data/Managed'
-Mono path[1] = 'C:/__GitHub/MatchThree/MatchThree/Elements_Data/Mono'
-Mono config path = 'C:/__GitHub/MatchThree/MatchThree/Elements_Data/Mono/etc'
-PlayerConnection initialized from C:/__GitHub/MatchThree/MatchThree/Elements_Data (debug = 0)
-PlayerConnection initialized network socket : 0.0.0.0 55147
-Multi-casting "[IP] 192.168.1.46 [Port] 55147 [Flags] 2 [Guid] 2853499653 [EditorId] 484610046 [Version] 1048832 [Id] WindowsPlayer(MEGA-PC) [Debug] 0" to [225.0.0.222:54997]...
-PlayerConnection already initialized - listening to [192.168.1.46:55147]
 Initialize engine version: 5.1.1f1 (2046fc06d4d8)
 GfxDevice: creating device client; threaded=1
 Direct3D:
     Version:  Direct3D 11.0 [level 11.0]
-    Renderer: Intel(R) HD Graphics 4600 (ID=0x416)
-    Vendor:   Intel
-    VRAM:     128 MB
+    Renderer: NVIDIA GeForce GTX 750 Ti (ID=0x1380)
+    Vendor:   NVIDIA
+    VRAM:     1994 MB
 Begin MonoManager ReloadAssembly
-Platform assembly: C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.dll (this message is harmless)
-Loading C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.dll into Unity Child Domain
-Platform assembly: C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\Assembly-CSharp.dll (this message is harmless)
-Loading C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
-Platform assembly: C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.UI.dll (this message is harmless)
-Loading C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
-Platform assembly: C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
-Loading C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-Platform assembly: C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
-Loading C:\__GitHub\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
-- Completed reload, in  0.443 seconds
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\System.Windows.Forms.dll (this message is harmless)
+Loading C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\System.Windows.Forms.dll into Unity Child Domain
+- Completed reload, in  0.032 seconds
 desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
+<RI> Initialized touch support.
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\System.dll (this message is harmless)
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\System.Drawing.dll (this message is harmless)
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\Accessibility.dll (this message is harmless)
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/libc
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/.\libc
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/libc
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\Mono.Posix.dll (this message is harmless)
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/libc
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/.\libc
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/libc
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/libX11
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/.\libX11
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/libX11
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/libX11
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/.\libX11
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/libX11
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/libX11
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/.\libX11
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/libX11
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/.\/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/lib/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/.\lib/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon
+Fallback handler could not load library C:/__Git/MatchThree/MatchThree/Elements_Data/Mono/lib/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon
+Platform assembly: C:\__Git\MatchThree\MatchThree\Elements_Data\Managed\System.Xml.dll (this message is harmless)
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 3.075040 ms
+
+Unloading 1 unused Assets to reduce memory usage. Loaded Objects now: 1194.
+Total: 0.423922 ms (FindLiveObjects: 0.023565 ms CreateObjectMapping: 0.022540 ms MarkObjects: 0.369363 ms  DeleteObjects: 0.002561 ms)
+
+Unloading 1 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.465162 ms
+
+Unloading 1 unused Assets to reduce memory usage. Loaded Objects now: 1194.
+Total: 0.352457 ms (FindLiveObjects: 0.023053 ms CreateObjectMapping: 0.009477 ms MarkObjects: 0.317365 ms  DeleteObjects: 0.002305 ms)
+
+Unloading 1 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.462857 ms
+
+Unloading 1 unused Assets to reduce memory usage. Loaded Objects now: 1194.
+Total: 0.360398 ms (FindLiveObjects: 0.024590 ms CreateObjectMapping: 0.009733 ms MarkObjects: 0.324025 ms  DeleteObjects: 0.002049 ms)
+
+Unloading 1 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.503584 ms
+
+Unloading 1 unused Assets to reduce memory usage. Loaded Objects now: 1194.
+Total: 0.363728 ms (FindLiveObjects: 0.023565 ms CreateObjectMapping: 0.009477 ms MarkObjects: 0.328380 ms  DeleteObjects: 0.002049 ms)
+
