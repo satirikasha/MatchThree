@@ -12,7 +12,7 @@
     public static BoardController Current {
       get { return _Current; }
     }
-    private static BoardController _Current;
+    protected static BoardController _Current;
 
     public const int CELLS_COUNT_X = 9;
     public const int CELLS_COUNT_Y = 9;
@@ -28,7 +28,7 @@
 
     public bool IsInitialized { get; private set; }
 
-    public Board Board { get; private set; }
+    public Board Board { get; protected set; }
 
     public HashSet<Cell> RecentlyChangedCells { get; private set; }
     public int RecentlyChangedCellsCount;

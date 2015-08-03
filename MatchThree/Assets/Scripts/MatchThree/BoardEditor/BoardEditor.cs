@@ -7,25 +7,11 @@
   using Engine.Utils;
   using Random = UnityEngine.Random;
 
-  public class BoardEditor: MonoBehaviour {
+  public class BoardEditor: BoardController {
 
-    public static BoardEditor Current {
-      get { return _Current; }
-    }
-    private static BoardEditor _Current;
+    public static BoardEditor Current { get { return BoardController._Current as BoardEditor; } } 
 
-    public const int CELLS_COUNT_X = 9;
-    public const int CELLS_COUNT_Y = 9;
-
-    public int ItemsCount = 5;
-    public float CellWidth = 2;
-    public float CellHeight = 2;
-
-    public Transform CellsContainer;
-
-    public GameObject CellPrefab;
-
-    public Board Board { get; private set; }
+    public BoardEditorMode Mode;/* { get; private set; }*/
 
     private Cell SelectedCell;
 
@@ -33,6 +19,8 @@
       _Current = this;
       PrepareCells();
     }
+
+    new void Update() { } 
 
     private void PrepareCells() {
       Board = new Board();
@@ -60,33 +48,92 @@
       return x.IsBetween(0, CELLS_COUNT_X - 1) && y.IsBetween(0, CELLS_COUNT_Y - 1) ? Board.Cells[x, y] : null;
     }
 
+    public Cell GetNearestCell(Vector2 screenPosition, Func<Cell, bool> selector) {
+      Vector3 pos = Camera.main.ScreenToWorldPoint(screenPosition);
+      Cell result = null;
+      float minSqrDistance = float.MaxValue;
+      float curSqrDistance = 0;
+      foreach(var cell in Board.Cells) {
+        if(selector(cell)) {
+          curSqrDistance = (pos - cell.transform.position).sqrMagnitude;
+          if(curSqrDistance < minSqrDistance) {
+            result = cell;
+            minSqrDistance = curSqrDistance;
+          }
+        }
+      }
+      return result;
+    }
+
+    public void SetMode(BoardEditorMode mode) {
+      if(SelectedCell != null) {
+        DeselectCell(SelectedCell);
+        SelectedCell = null;
+      }
+      Mode = mode;
+    }
+
     public void OnClick(Vector2 position) {
-      Cell cell = GetCell(position);
-      if(cell != null) {
-        if(SelectedCell != null) {
-          if(!ReferenceEquals(SelectedCell, cell)) {
-            DeselectCell(SelectedCell);
+      if(Mode == BoardEditorMode.Normal) {
+        Cell cell = GetCell(position);
+        if(cell != null && !cell.IsVoid) {
+          if(SelectedCell != null) {
+            if(!ReferenceEquals(SelectedCell, cell)) {
+              DeselectCell(SelectedCell);
+              SelectedCell = cell;
+              SelectCell(SelectedCell);
+            }
+            else {
+              DeselectCell(SelectedCell);
+              SelectedCell = null;
+            }
+          }
+          else {
             SelectedCell = cell;
             SelectCell(SelectedCell);
           }
-          else {
-            DeselectCell(SelectedCell);
-            SelectedCell = null;
-          }
         }
-        else {
-          SelectedCell = cell;
-          SelectCell(SelectedCell);
+      }
+      else {
+        if(Mode == BoardEditorMode.Delete)
+          Delete();
+        if(Mode == BoardEditorMode.Restore)
+          Restore();
+      }
+    }
+
+    public void OnHover(Vector2 position) {
+      if(Mode == BoardEditorMode.Delete || Mode == BoardEditorMode.Restore) {
+        Cell cell;
+        if(Mode == BoardEditorMode.Delete)
+          cell = GetNearestCell(position, _ => !_.IsVoid);
+        else
+          cell = GetNearestCell(position, _ => _.IsVoid);
+        if(cell != null) {
+          if(!ReferenceEquals(SelectedCell, cell)) {
+            if(SelectedCell != null)
+              DeselectCell(SelectedCell);
+            SelectedCell = cell;
+            SelectCell(cell);
+          }
         }
       }
     }
 
     private void SelectCell(Cell cell) {
-      cell.GetComponent<SpriteRenderer>().color = Color.green;
+      switch(Mode) {
+        case BoardEditorMode.Delete: cell.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f); break;
+        case BoardEditorMode.Restore: var renderer = cell.GetComponent<SpriteRenderer>(); renderer.enabled = true; renderer.color = new Color(1, 1, 1, 0.5f); break;
+        default: cell.GetComponent<SpriteRenderer>().color = Color.green; break;
+      }
     }
 
     private void DeselectCell(Cell cell) {
-      cell.GetComponent<SpriteRenderer>().color = Color.white;
+      switch(Mode) {
+        case BoardEditorMode.Delete: cell.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1); break;
+        case BoardEditorMode.Restore: var renderer = cell.GetComponent<SpriteRenderer>(); renderer.color = new Color(1, 1, 1, 1); if(cell.IsVoid) renderer.enabled = false; break;
+        default: cell.GetComponent<SpriteRenderer>().color = Color.white; break;
+      }
     }
 
     public void RemoveItems() {
@@ -99,21 +146,75 @@
       }
     }
 
+    public void ClearSelection() {
+      if(SelectedCell != null) {
+        DeselectCell(SelectedCell);
+        SelectedCell = null;
+      }
+    }
+
     public void New() {
       Application.LoadLevelAsync(Application.loadedLevel);
+    }
+
+    public void MoveSelectionUp() {
+      if(SelectedCell != null && SelectedCell.Up != null) {
+        DeselectCell(SelectedCell);
+        SelectedCell = SelectedCell.Up;
+        SelectCell(SelectedCell);
+      }
+    }
+
+    public void MoveSelectionDown() {
+      if(SelectedCell != null && SelectedCell.Down != null) {
+        DeselectCell(SelectedCell);
+        SelectedCell = SelectedCell.Down;
+        SelectCell(SelectedCell);
+      }
+    }
+
+    public void MoveSelectionLeft() {
+      if(SelectedCell != null && SelectedCell.Left != null) {
+        DeselectCell(SelectedCell);
+        SelectedCell = SelectedCell.Left;
+        SelectCell(SelectedCell);
+      }
+    }
+
+    public void MoveSelectionRight() {
+      if(SelectedCell != null && SelectedCell.Right != null) {
+        DeselectCell(SelectedCell);
+        SelectedCell = SelectedCell.Right;
+        SelectCell(SelectedCell);
+      }
     }
 
     public void Delete() {
       if(SelectedCell != null) {
         SelectedCell.IsVoid = true;
         SelectedCell.ApplyVisuals();
-        SelectedCell = null;
+        ClearSelection();
+      }
+    }
+
+    public void Restore() {
+      if(SelectedCell != null) {
+        SelectedCell.IsVoid = false;
+        SelectedCell.ApplyVisuals();
+        ClearSelection();
       }
     }
 
     public void Block() {
       if(SelectedCell != null) {
         SelectedCell.IsBlocked = !SelectedCell.IsBlocked;
+        SelectedCell.ApplyVisuals();
+      }
+    }
+
+    public void Clay() {
+      if(SelectedCell != null) {
+        SelectedCell.IsClayed = !SelectedCell.IsClayed;
         SelectedCell.ApplyVisuals();
       }
     }

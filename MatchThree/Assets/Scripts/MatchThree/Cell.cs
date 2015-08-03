@@ -36,6 +36,7 @@
     public bool IsItemGenerator;
     public bool IsVoid;
     public bool IsBlocked;
+    public bool IsClayed;
 
     #region Navigation properties
     public Cell Up {
@@ -101,7 +102,8 @@
     public void ApplyVisuals() {
       if(IsVoid)
         IsBlocked = false;
-      this.transform.GetChild(0).gameObject.SetActive(IsBlocked);
+      this.transform.GetChild(0).gameObject.SetActive(IsClayed);
+      this.transform.GetChild(1).gameObject.SetActive(IsBlocked);
       this.GetComponent<SpriteRenderer>().enabled = !IsVoid;
     }
   }
