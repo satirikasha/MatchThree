@@ -161,21 +161,33 @@
 
     public void HotKeys() {
       var form = new Form();
-      var layout1 = new FlowLayoutPanel();
-      var layout2 = new FlowLayoutPanel();
-      layout1.BackColor = System.Drawing.Color.Green;
-      layout1.Dock = DockStyle.Left;
-      form.Controls.Add(layout1);
-      layout2.BackColor = System.Drawing.Color.Gold;
-      layout1.Dock = DockStyle.Right;
-      form.Controls.Add(layout2);
-      var label = new Label();
-      label.Text = "Hui";
-      layout1.Controls.Add(label);
-      label = new Label();
-      label.Text = "Pizda";
-      layout2.Controls.Add(label);
-      form.ShowDialog();
+      var keyLayout = new FlowLayoutPanel();
+      var valLayout = new FlowLayoutPanel();
+      keyLayout.Padding = new Padding(5);
+      valLayout.Padding = new Padding(5);
+      keyLayout.Dock = DockStyle.Left;
+      valLayout.Dock = DockStyle.Right;
+      keyLayout.FlowDirection = FlowDirection.TopDown;
+      valLayout.FlowDirection = FlowDirection.TopDown;
+      keyLayout.AutoSize = true;
+      valLayout.AutoSize = true;
+      form.Controls.Add(keyLayout);
+      form.Controls.Add(valLayout);
+      foreach(var desc in BoardEditorInput.HotkeysDesc) {
+        var keyLabel = new Label();
+        var valLabel = new Label();
+        keyLabel.Text = desc.Key;
+        valLabel.Text = desc.Value;
+        keyLabel.AutoSize = true;
+        valLabel.AutoSize = true;
+        keyLayout.Controls.Add(keyLabel);
+        valLayout.Controls.Add(valLabel);
+      }
+      form.AutoSize = true;
+      form.Width = keyLayout.Width + valLayout.Width;
+      form.KeyPreview = true;
+      form.KeyDown += (s, e) => { if(e.KeyCode == Keys.Escape) form.Close(); };
+      form.Show();
       //MessageBox.Show(
       //  " 1                     - Enable/disable water      " + "\n" +
       //  " 2                     - Enable/disable fire       " + "\n" +

@@ -16,6 +16,24 @@ using UnityEngine.Events;
     }
     private static BoardEditorInput _Current;
 
+    public static Dictionary<string, string> HotkeysDesc = new Dictionary<string, string>() {
+        {"1",                "Enable/disable water"       },
+        {"2",                "Enable/disable fire"        },
+        {"3",                "Enable/disable wind"        },
+        {"4",                "Enable/disable earth"       },
+        {"5",                "Enable/disable electricity" },
+        {"c",                "Add/remove clay"            },
+        {"b",                "Add/remove block"           },
+        {"↑",                "Move selection up"          },
+        {"↓",                "Move selection down"        },
+        {"→",                "Move selection right"       },
+        {"←",                "Move selection left"        },
+        {"esc",              "Switch to normal mode"      },
+        {"ctrl + s",         "Save"                       },
+        {"ctrl + shift + s", "Save as"                    },
+        {"ctrl + shift + n", "New file"                   }
+    };
+
     public UnityEvent OnEditorModeReset;
 
     public bool IsHovered { get; private set; }
