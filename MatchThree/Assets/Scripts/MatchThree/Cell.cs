@@ -100,8 +100,12 @@
     }
 
     public void ApplyVisuals() {
-      if(IsVoid)
+      // Disable all modificators if void
+      if(IsVoid) {
+        IsClayed = false;
         IsBlocked = false;
+      }
+      // Apply visuals
       this.transform.GetChild(0).gameObject.SetActive(IsClayed);
       this.transform.GetChild(1).gameObject.SetActive(IsBlocked);
       this.GetComponent<SpriteRenderer>().enabled = !IsVoid;

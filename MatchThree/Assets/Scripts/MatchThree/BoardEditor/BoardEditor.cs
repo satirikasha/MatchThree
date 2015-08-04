@@ -138,16 +138,6 @@
       }
     }
 
-    public void RemoveItems() {
-      for(int i = 0; i < CELLS_COUNT_X; i++) {
-        for(int j = 0; j < CELLS_COUNT_Y; j++) {
-          var cell = Board.Cells[i, j];
-          if(cell.ChildItem != null)
-            cell.RemoveItem();
-        }
-      }
-    }
-
     public void ClearSelection() {
       if(SelectedCell != null) {
         DeselectCell(SelectedCell);
@@ -155,12 +145,54 @@
       }
     }
 
+    public void Save() { }
+
+    public void SaveAs() {
+      var result = new SaveFileDialog().ShowDialog();
+    }
+
     public void Load() {
-      var dialog = new OpenFileDialog().ShowDialog();
+      var result = new OpenFileDialog().ShowDialog();
     }
 
     public void New() {
       Application.LoadLevelAsync(Application.loadedLevel);
+    }
+
+    public void HotKeys() {
+      var form = new Form();
+      var layout1 = new FlowLayoutPanel();
+      var layout2 = new FlowLayoutPanel();
+      layout1.BackColor = System.Drawing.Color.Green;
+      layout1.Dock = DockStyle.Left;
+      form.Controls.Add(layout1);
+      layout2.BackColor = System.Drawing.Color.Gold;
+      layout1.Dock = DockStyle.Right;
+      form.Controls.Add(layout2);
+      var label = new Label();
+      label.Text = "Hui";
+      layout1.Controls.Add(label);
+      label = new Label();
+      label.Text = "Pizda";
+      layout2.Controls.Add(label);
+      form.ShowDialog();
+      //MessageBox.Show(
+      //  " 1                     - Enable/disable water      " + "\n" +
+      //  " 2                     - Enable/disable fire       " + "\n" +
+      //  " 3                     - Enable/disable wind       " + "\n" +
+      //  " 4                     - Enable/disable earth      " + "\n" +
+      //  " 5                     - Enable/disable electricity" + "\n" +
+      //  " c                     - Add/remove clay           " + "\n" +
+      //  " b                     - Add/remove block          " + "\n" +
+      //  "↑                     - Move selection up          " + "\n" +
+      //  "↓                     - Move selection down        " + "\n" +
+      //  "→                     - Move selection right       " + "\n" +
+      //  "←                     - Move selection left        " + "\n" +
+      //  "esc                  - Switch to normal mode        " + "\n" +
+      //  "ctrl + s             - Save                         " + "\n" +
+      //  "ctrl + shift + s  - Save as                      " + "\n" +
+      //  "ctrl + shift + n  - New file" 
+      //  );
     }
 
     public void MoveSelectionUp() {

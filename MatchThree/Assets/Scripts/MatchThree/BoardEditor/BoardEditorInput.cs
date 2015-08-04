@@ -45,10 +45,24 @@ using UnityEngine.Events;
         BoardEditor.Current.MoveSelectionLeft();
       if(Input.GetKeyDown(KeyCode.RightArrow))
         BoardEditor.Current.MoveSelectionRight();
+      if(Input.GetKeyDown(KeyCode.F1))
+        BoardEditor.Current.HotKeys();
       if(Input.GetKeyDown(KeyCode.B))
         BoardEditor.Current.Block();
       if(Input.GetKeyDown(KeyCode.C))
         BoardEditor.Current.Clay();
+      if(Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) {
+        if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {
+          if(Input.GetKeyDown(KeyCode.N))
+            BoardEditor.Current.New();
+          if(Input.GetKeyDown(KeyCode.S))
+            BoardEditor.Current.SaveAs();
+        }
+        else {
+          if(Input.GetKeyDown(KeyCode.S))
+            BoardEditor.Current.Save();
+        }
+      }
     }
 
     public void OnBeginDrag(PointerEventData eventData) {

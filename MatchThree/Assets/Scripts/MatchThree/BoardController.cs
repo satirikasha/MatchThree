@@ -56,7 +56,7 @@
         RecentlyChangedCells = new HashSet<Cell>();
         RecentlyChangedCellsCount = 0;
       }
-    }
+    }   
 
     private void PrepareItemTypes() {
       Board = new Board();

@@ -16,13 +16,16 @@
 #Unity3D Generated File On Crash Reports
 sysinfo.txt
 
+#Custom
+*.app
+*_Data
+
 # =========================
 # Operating System Files
 # =========================
 
 # OSX
 # =========================
-
 .DS_Store
 .AppleDouble
 .LSOverride
