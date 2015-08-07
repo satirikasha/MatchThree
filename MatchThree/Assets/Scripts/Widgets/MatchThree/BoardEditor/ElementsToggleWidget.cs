@@ -4,6 +4,9 @@
   using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.UI;
+  using Elements.Game.MatchThree.Editor;
+  using System;
+  using Elements.Game.MatchThree;
 
   public class ElementsToggleWidget: MonoBehaviour {
 
@@ -22,6 +25,13 @@ using UnityEngine.UI;
               LastDisabledToggle.isOn = true;
             LastDisabledToggle = toggleRef;
           }
+
+          if(_)
+            BoardEditor.Current.Board.ItemTypes.Add((ItemType)Enum.Parse(typeof(ItemType), toggleRef.name));
+          else
+            BoardEditor.Current.Board.ItemTypes.Remove((ItemType)Enum.Parse(typeof(ItemType), toggleRef.name));
+
+          Debug.Log(BoardEditor.Current.Board.ItemTypes.Count);
         });
       }
     }

@@ -21,7 +21,7 @@ using UnityEngine.Events;
         {"2",                "Enable/disable fire"        },
         {"3",                "Enable/disable wind"        },
         {"4",                "Enable/disable earth"       },
-        {"5",                "Enable/disable electricity" },
+        {"5",                "Enable/disable electo"      },
         {"c",                "Add/remove clay"            },
         {"b",                "Add/remove block"           },
         {"↑",                "Move selection up"          },

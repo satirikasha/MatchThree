@@ -1,29 +1,39 @@
 ﻿namespace Elements.Game.MatchThree.Editor {
-  using UnityEngine;
+  using System;
+  using System.IO;
+  using System.Linq;
   using System.Collections;
   using System.Collections.Generic;
   using System.Windows.Forms;
-  using System.Linq;
-  using System;
+  using System.Runtime.Serialization.Formatters.Binary;
+  using UnityEngine;
   using Engine.Utils;
   using Random = UnityEngine.Random;
   using Application = UnityEngine.Application;
+  using Elements.Game.MatchThree.Data;
+
+
 
   public class BoardEditor: BoardController {
 
     public static new BoardEditor Current { get { return BoardController._Current as BoardEditor; } }
 
+    public const string FILE_EXT = ".m3l";
+
     public BoardEditorMode Mode { get; private set; }
 
     private Cell SelectedCell;
 
+    private string CurrentFilePath;
+
     void Awake() {
       _Current = this;
+      PrepareItemTypes();
       PrepareCells();
+      Debug.Log(Board.ItemTypes.Count);
     }
 
     private void PrepareCells() {
-      Board = new Board();
       Board.Cells = new Cell[CELLS_COUNT_X, CELLS_COUNT_Y];
       var offset = new Vector3(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
       for(int i = 0; i < CELLS_COUNT_X; i++) {
@@ -32,7 +42,7 @@
           cell.transform.parent = CellsContainer;
           cell.transform.localPosition = new Vector3(i * CellWidth + CellWidth / 2, j * CellHeight + CellHeight / 2, 0) + offset;
           cell.BoardPosition = new Position() { x = i, y = j };
-          cell.IsItemGenerator = j == CELLS_COUNT_Y - 1;
+          cell.Data.IsItemGenerator = j == CELLS_COUNT_Y - 1;
           cell.enabled = false;
           Board.Cells[i, j] = cell;
         }
@@ -78,7 +88,7 @@
     public void OnClick(Vector2 position) {
       if(Mode == BoardEditorMode.Normal) {
         Cell cell = GetCell(position);
-        if(cell != null && !cell.IsVoid) {
+        if(cell != null && !cell.Data.IsVoid) {
           if(SelectedCell != null) {
             if(!ReferenceEquals(SelectedCell, cell)) {
               DeselectCell(SelectedCell);
@@ -108,9 +118,9 @@
       if(Mode == BoardEditorMode.Delete || Mode == BoardEditorMode.Restore) {
         Cell cell;
         if(Mode == BoardEditorMode.Delete)
-          cell = GetNearestCell(position, _ => !_.IsVoid);
+          cell = GetNearestCell(position, _ => !_.Data.IsVoid);
         else
-          cell = GetNearestCell(position, _ => _.IsVoid);
+          cell = GetNearestCell(position, _ => _.Data.IsVoid);
         if(cell != null) {
           if(!ReferenceEquals(SelectedCell, cell)) {
             if(SelectedCell != null)
@@ -133,7 +143,7 @@
     private void DeselectCell(Cell cell) {
       switch(Mode) {
         case BoardEditorMode.Delete: cell.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1); break;
-        case BoardEditorMode.Restore: var renderer = cell.GetComponent<SpriteRenderer>(); renderer.color = new Color(1, 1, 1, 1); if(cell.IsVoid) renderer.enabled = false; break;
+        case BoardEditorMode.Restore: var renderer = cell.GetComponent<SpriteRenderer>(); renderer.color = new Color(1, 1, 1, 1); if(cell.Data.IsVoid) renderer.enabled = false; break;
         default: cell.GetComponent<SpriteRenderer>().color = Color.white; break;
       }
     }
@@ -145,18 +155,58 @@
       }
     }
 
-    public void Save() { }
+    private void SaveToFile(string path) {
+      using(var fs = new FileStream(path, FileMode.Create)) {
+        new BinaryFormatter().Serialize(fs, Board.GetData());
+      }
+    }
+
+    private void LoadFromFile(string path) {
+      using(var fs = new FileStream(path, FileMode.Open)) {
+        Board.SetData(new BinaryFormatter().Deserialize(fs) as BoardData);
+        Debug.Log("Finished");
+      }
+    }
+
+    public void Save() {
+      if(!String.IsNullOrEmpty(CurrentFilePath))
+        SaveToFile(CurrentFilePath);
+      else
+        SaveAs();
+    }
 
     public void SaveAs() {
-      var result = new SaveFileDialog().ShowDialog();
+      var dialog = new SaveFileDialog();
+      dialog.Filter = FILE_EXT + " | *" + FILE_EXT;
+      if(PlayerPrefs.HasKey("InitialDir"))
+        dialog.InitialDirectory = PlayerPrefs.GetString("InitialDir");
+      dialog.AddExtension = true;
+      dialog.RestoreDirectory = true;
+
+      if(dialog.ShowDialog() == DialogResult.OK) {
+        PlayerPrefs.SetString("InitialDir", dialog.FileName.Remove(dialog.FileName.LastIndexOf('\\') + 1));
+        CurrentFilePath = dialog.FileName;
+        SaveToFile(dialog.FileName);
+      }
     }
 
     public void Load() {
-      var result = new OpenFileDialog().ShowDialog();
+      var dialog = new OpenFileDialog();
+      dialog.Filter = FILE_EXT + " | *" + FILE_EXT;
+      if(PlayerPrefs.HasKey("InitialDir"))
+        dialog.InitialDirectory = PlayerPrefs.GetString("InitialDir");
+      dialog.AddExtension = true;
+      dialog.RestoreDirectory = true;
+
+      if(dialog.ShowDialog() == DialogResult.OK){
+        CurrentFilePath = dialog.FileName;
+        LoadFromFile(dialog.FileName);
+      }
     }
 
     public void New() {
-      Application.LoadLevelAsync(Application.loadedLevel);
+      if(MessageBox.Show("Your current progress will be lost. \n Do you want to proceed?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+        Application.LoadLevelAsync(Application.loadedLevel);
     }
 
     public void HotKeys() {
@@ -188,23 +238,6 @@
       form.KeyPreview = true;
       form.KeyDown += (s, e) => { if(e.KeyCode == Keys.Escape) form.Close(); };
       form.Show();
-      //MessageBox.Show(
-      //  " 1                     - Enable/disable water      " + "\n" +
-      //  " 2                     - Enable/disable fire       " + "\n" +
-      //  " 3                     - Enable/disable wind       " + "\n" +
-      //  " 4                     - Enable/disable earth      " + "\n" +
-      //  " 5                     - Enable/disable electricity" + "\n" +
-      //  " c                     - Add/remove clay           " + "\n" +
-      //  " b                     - Add/remove block          " + "\n" +
-      //  "↑                     - Move selection up          " + "\n" +
-      //  "↓                     - Move selection down        " + "\n" +
-      //  "→                     - Move selection right       " + "\n" +
-      //  "←                     - Move selection left        " + "\n" +
-      //  "esc                  - Switch to normal mode        " + "\n" +
-      //  "ctrl + s             - Save                         " + "\n" +
-      //  "ctrl + shift + s  - Save as                      " + "\n" +
-      //  "ctrl + shift + n  - New file" 
-      //  );
     }
 
     public void MoveSelectionUp() {
@@ -241,7 +274,7 @@
 
     public void Delete() {
       if(SelectedCell != null) {
-        SelectedCell.IsVoid = true;
+        SelectedCell.Data.IsVoid = true;
         SelectedCell.ApplyVisuals();
         ClearSelection();
       }
@@ -249,7 +282,7 @@
 
     public void Restore() {
       if(SelectedCell != null) {
-        SelectedCell.IsVoid = false;
+        SelectedCell.Data.IsVoid = false;
         SelectedCell.ApplyVisuals();
         ClearSelection();
       }
@@ -257,14 +290,14 @@
 
     public void Block() {
       if(SelectedCell != null) {
-        SelectedCell.IsBlocked = !SelectedCell.IsBlocked;
+        SelectedCell.Data.IsBlocked = !SelectedCell.Data.IsBlocked;
         SelectedCell.ApplyVisuals();
       }
     }
 
     public void Clay() {
       if(SelectedCell != null) {
-        SelectedCell.IsClayed = !SelectedCell.IsClayed;
+        SelectedCell.Data.IsClayed = !SelectedCell.Data.IsClayed;
         SelectedCell.ApplyVisuals();
       }
     }

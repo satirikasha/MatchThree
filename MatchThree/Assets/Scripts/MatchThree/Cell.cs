@@ -3,9 +3,19 @@
   using System.Collections;
   using Engine.Utils;
   using System;
+  using Elements.Game.MatchThree.Data;
 
-  [Serializable]
   public class Cell: MonoBehaviour {
+
+    public CellData Data {
+      get {
+        if(_Data == null) {
+          _Data = new CellData();
+        }
+        return _Data;
+      }
+    }
+    private CellData _Data;
 
     public event Action<Cell> OnChildItemChanged;
 
@@ -25,18 +35,19 @@
         }
       }
     }
-    [NonSerialized]
     private Item _ChildItem;
 
-    public Position BoardPosition { get; set; }
+    public Position BoardPosition { 
+      get {
+        return Data.BoardPosition;
+      } 
+      set {
+        Data.BoardPosition = value;
+      } 
+    }
 
-    public bool CanGenerateItems { get { return IsItemGenerator; } }
-    public bool CanMove { get { return !(IsBlocked || IsVoid); } }
-
-    public bool IsItemGenerator;
-    public bool IsVoid;
-    public bool IsBlocked;
-    public bool IsClayed;
+    public bool CanGenerateItems { get { return Data.IsItemGenerator; } }
+    public bool CanMove { get { return !(Data.IsBlocked || Data.IsVoid); } }
 
     #region Navigation properties
     public Cell Up {
@@ -87,6 +98,10 @@
       }
     }
 
+    public void LoadData(CellData data) {
+      _Data = data;
+    }
+
     public void SwapItems(Cell cell) {
       var item = cell.ChildItem;
       cell.ChildItem = this.ChildItem;
@@ -101,14 +116,14 @@
 
     public void ApplyVisuals() {
       // Disable all modificators if void
-      if(IsVoid) {
-        IsClayed = false;
-        IsBlocked = false;
+      if(Data.IsVoid) {
+        Data.IsClayed = false;
+        Data.IsBlocked = false;
       }
       // Apply visuals
-      this.transform.GetChild(0).gameObject.SetActive(IsClayed);
-      this.transform.GetChild(1).gameObject.SetActive(IsBlocked);
-      this.GetComponent<SpriteRenderer>().enabled = !IsVoid;
+      this.transform.GetChild(0).gameObject.SetActive(Data.IsClayed);
+      this.transform.GetChild(1).gameObject.SetActive(Data.IsBlocked);
+      this.GetComponent<SpriteRenderer>().enabled = !Data.IsVoid;
     }
   }
 }

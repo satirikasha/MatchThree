@@ -58,7 +58,7 @@
       }
     }   
 
-    private void PrepareItemTypes() {
+    protected void PrepareItemTypes() {
       Board = new Board();
       Board.ItemTypes = Enum.GetValues(typeof(ItemType)).Cast<ItemType>().ToList().GetRange(0, ItemsCount);
     }
@@ -78,7 +78,7 @@
           cell.transform.parent = CellsContainer;
           cell.transform.localPosition = new Vector3(i * CellWidth + CellWidth / 2, j * CellHeight + CellHeight / 2, 0) + offset;
           cell.BoardPosition = new Position() { x = i, y = j };
-          cell.IsItemGenerator = j == CELLS_COUNT_Y - 1;
+          cell.Data.IsItemGenerator = j == CELLS_COUNT_Y - 1;
           cell.OnChildItemChanged += _ => { if(IsInitialized) RecentlyChangedCells.Add(_); };
           Board.Cells[i, j] = cell;
         }

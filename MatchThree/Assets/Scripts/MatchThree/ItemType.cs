@@ -7,6 +7,6 @@
     Water,
     Wind,
     Earth,
-    Electo
+    Electro
   }
 }

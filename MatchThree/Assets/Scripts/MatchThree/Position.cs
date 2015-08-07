@@ -4,6 +4,7 @@
   using System.Linq;
   using System.Text;
 
+  [Serializable]
   public struct Position {
     public int x;
     public int y;
