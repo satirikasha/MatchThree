@@ -18,6 +18,8 @@
 
     public static new BoardEditor Current { get { return BoardController._Current as BoardEditor; } }
 
+    public event Action<Board> OnLevelLoaded;
+
     public const string FILE_EXT = ".m3l";
 
     public BoardEditorMode Mode { get; private set; }
@@ -30,7 +32,10 @@
       _Current = this;
       PrepareItemTypes();
       PrepareCells();
-      Debug.Log(Board.ItemTypes.Count);
+    }
+
+    void Start() {
+      OnLevelLoaded(Board);
     }
 
     private void PrepareCells() {
@@ -164,7 +169,7 @@
     private void LoadFromFile(string path) {
       using(var fs = new FileStream(path, FileMode.Open)) {
         Board.SetData(new BinaryFormatter().Deserialize(fs) as BoardData);
-        Debug.Log("Finished");
+        OnLevelLoaded(Board);
       }
     }
 

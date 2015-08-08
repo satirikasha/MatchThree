@@ -15,7 +15,7 @@ using UnityEngine.UI;
     private List<Toggle> ChildToggles;
     private Toggle LastDisabledToggle;
 
-    void Start() {
+    void Awake() {
       ChildToggles = new List<Toggle>(this.GetComponentsInChildren<Toggle>());
       foreach(var toggle in ChildToggles) {
         var toggleRef = toggle;
@@ -30,9 +30,13 @@ using UnityEngine.UI;
             BoardEditor.Current.Board.ItemTypes.Add((ItemType)Enum.Parse(typeof(ItemType), toggleRef.name));
           else
             BoardEditor.Current.Board.ItemTypes.Remove((ItemType)Enum.Parse(typeof(ItemType), toggleRef.name));
-
-          Debug.Log(BoardEditor.Current.Board.ItemTypes.Count);
         });
+
+        BoardEditor.Current.OnLevelLoaded += _ => {
+          ChildToggles.ForEach(t => t.interactable = false);
+          ChildToggles.ForEach(t => t.isOn = _.ItemTypes.Contains((ItemType)Enum.Parse(typeof(ItemType), t.name)));
+          ChildToggles.ForEach(t => t.interactable = true);
+        };
       }
     }
 
