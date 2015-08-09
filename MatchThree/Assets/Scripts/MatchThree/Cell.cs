@@ -88,14 +88,39 @@
     #endregion
 
     void Update() {
-      if(Down != null && Down.ChildItem == null) {
-        Down.ChildItem = ChildItem;
+      var fallDownCell = GetFallDownCell();
+      if(fallDownCell != null) {
+        fallDownCell.ChildItem = ChildItem;
         ChildItem = null;
       }
       if(CanGenerateItems && ChildItem == null) {
         ChildItem = ItemFactory.Current.GetItem(BoardController.Current.Board.ItemTypes.GetRandomElement());
         ChildItem.Show();
       }
+    }
+
+    public Cell GetFallDownCell() {
+      Cell result = null;
+      Cell nextCell = Down;
+      while(nextCell != null && nextCell.Data.IsVoid) {
+        nextCell = nextCell.Down;
+      }
+      if(nextCell != null) {
+        if(nextCell.ChildItem == null) {
+          result = nextCell;
+        }
+        //else {
+        //  if(nextCell.Left != null && !nextCell.Left.Data.IsVoid && nextCell.Left.ChildItem == null) {
+        //    result = nextCell.Left;
+        //    return result;
+        //  }
+        //  if(nextCell.Right != null && !nextCell.Right.Data.IsVoid && nextCell.Right.ChildItem == null) {
+        //    result = nextCell.Right;
+        //    return result;
+        //  }
+        //}
+      }
+      return result;
     }
 
     public void LoadData(CellData data) {
@@ -109,8 +134,22 @@
     }
 
     public void RemoveItem() {
+      RemoveObstacle();
       if(ChildItem != null) {
         ChildItem.Hide();
+      }
+    }
+
+    public void RemoveObstacle() {
+      if(Data.IsClayed) {
+        Data.IsClayed = false;
+        ApplyVisuals();
+        return;
+      }
+      if(Data.IsBlocked) {
+        Data.IsBlocked = false;
+        ApplyVisuals();
+        return;
       }
     }
 

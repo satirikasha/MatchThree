@@ -23,6 +23,10 @@
       return !(x == y);
     }
 
+    public bool CanApply() {
+      return From.CanMove && To.CanMove;
+    }
+
     public void Apply() {
       if(!_Applied) {
         To.SwapItems(From);

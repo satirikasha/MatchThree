@@ -7,6 +7,7 @@
   using UnityEngine;
 
   public class Board {
+
     public Cell[,] Cells;
     public List<ItemType> ItemTypes;
 

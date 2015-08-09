@@ -2,15 +2,12 @@
   using System;
   using System.IO;
   using System.Linq;
-  using System.Collections;
-  using System.Collections.Generic;
   using System.Windows.Forms;
   using System.Runtime.Serialization.Formatters.Binary;
   using UnityEngine;
   using Engine.Utils;
-  using Random = UnityEngine.Random;
-  using Application = UnityEngine.Application;
   using Elements.Game.MatchThree.Data;
+  using Application = UnityEngine.Application;
 
 
 
@@ -20,7 +17,7 @@
 
     public event Action<Board> OnLevelLoaded;
 
-    public const string FILE_EXT = ".m3l";
+    public const string FILE_EXT = ".bytes";
 
     public BoardEditorMode Mode { get; private set; }
 
@@ -36,6 +33,11 @@
 
     void Start() {
       OnLevelLoaded(Board);
+    }
+
+    private void PrepareItemTypes() {
+      Board = new Board();
+      Board.ItemTypes = Enum.GetValues(typeof(ItemType)).Cast<ItemType>().ToList();
     }
 
     private void PrepareCells() {
@@ -55,15 +57,6 @@
     }
 
     void Update() { }
-
-    public Cell GetCell(Vector2 screenPosition) {
-      var offset = new Vector2(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
-      Vector2 pos = Camera.main.ScreenToWorldPoint(screenPosition);
-      pos -= this.transform.position.ToVector2() + offset;
-      var x = Mathf.RoundToInt((pos.x - CellWidth / 2) / CellWidth);
-      var y = Mathf.RoundToInt((pos.y - CellHeight / 2) / CellHeight);
-      return x.IsBetween(0, CELLS_COUNT_X - 1) && y.IsBetween(0, CELLS_COUNT_Y - 1) ? Board.Cells[x, y] : null;
-    }
 
     public Cell GetNearestCell(Vector2 screenPosition, Func<Cell, bool> selector) {
       Vector3 pos = Camera.main.ScreenToWorldPoint(screenPosition);
@@ -169,7 +162,6 @@
     private void LoadFromFile(string path) {
       using(var fs = new FileStream(path, FileMode.Open)) {
         Board.SetData(new BinaryFormatter().Deserialize(fs) as BoardData);
-        OnLevelLoaded(Board);
       }
     }
 

@@ -96,12 +96,9 @@
     }
 
     public void Remove() {
-      var color = Utils.GetRandomColor();//!!
       foreach(var cell in Cells)
-        if(cell.IsNotNullOrEmpty()) {
+        if(cell.IsNotNullOrEmpty())
           cell.RemoveItem();
-          cell.GetComponent<SpriteRenderer>().color = color;//!!
-        }
     }
   }
 }

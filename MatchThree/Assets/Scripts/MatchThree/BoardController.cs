@@ -6,6 +6,9 @@
   using System;
   using Engine.Utils;
   using Random = UnityEngine.Random;
+  using System.IO;
+  using System.Runtime.Serialization.Formatters.Binary;
+  using Elements.Game.MatchThree.Data;
 
   public class BoardController: MonoBehaviour {
 
@@ -17,7 +20,7 @@
     public const int CELLS_COUNT_X = 9;
     public const int CELLS_COUNT_Y = 9;
 
-    public int ItemsCount = 5;
+    public string LevelName = "Test";
     public float CellWidth = 2;
     public float CellHeight = 2;
 
@@ -35,9 +38,9 @@
 
     void Awake() {
       _Current = this;
-      PrepareItemTypes();
-      PrepareFactory();
       PrepareCells();
+      PrepareLevel();
+      PrepareFactory();
       PrepareItems();
       PrepareInput();
       IsInitialized = true;
@@ -56,19 +59,16 @@
         RecentlyChangedCells = new HashSet<Cell>();
         RecentlyChangedCellsCount = 0;
       }
-    }   
-
-    protected void PrepareItemTypes() {
-      Board = new Board();
-      Board.ItemTypes = Enum.GetValues(typeof(ItemType)).Cast<ItemType>().ToList().GetRange(0, ItemsCount);
     }
 
-    private void PrepareFactory() {
-      ItemFactory.Instantiate();
-      Board.ItemTypes.ForEach(_ => ItemFactory.Current.AddItems(_, 50));
+    private void PrepareLevel() {
+      using(var ms = new MemoryStream(Resources.Load<TextAsset>("Levels/" + LevelName).bytes)) {
+          Board.SetData(new BinaryFormatter().Deserialize(ms) as BoardData);
+      }
     }
 
     private void PrepareCells() {
+      Board = new Board();
       Board.Cells = new Cell[CELLS_COUNT_X, CELLS_COUNT_Y];
       RecentlyChangedCells = new HashSet<Cell>();
       var offset = new Vector3(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
@@ -85,19 +85,26 @@
       }
     }
 
+    private void PrepareFactory() {
+      ItemFactory.Instantiate();
+      Board.ItemTypes.ForEach(_ => ItemFactory.Current.AddItems(_, 50));
+    }
+
     private void PrepareItems() {
       for(int i = 0; i < CELLS_COUNT_X; i++) {
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
           var cell = Board.Cells[i, j];
-          var itemTypesAvailable = new List<ItemType>(Board.ItemTypes);
-          var itemType = itemTypesAvailable.GetRandomElement();
-          while((cell.Left != null && cell.Left.ChildItem.Type == itemType && cell.Left.Left != null && cell.Left.Left.ChildItem.Type == itemType)
-             || (cell.Down != null && cell.Down.ChildItem.Type == itemType && cell.Down.Down != null && cell.Down.Down.ChildItem.Type == itemType)) {
-            itemTypesAvailable.Remove(itemType);
-            itemType = itemTypesAvailable.GetRandomElement();
+          if(!cell.Data.IsVoid) {
+            var itemTypesAvailable = new List<ItemType>(Board.ItemTypes);
+            var itemType = itemTypesAvailable.GetRandomElement();
+            while((cell.Left.IsNotNullOrEmpty() && cell.Left.ChildItem.Type == itemType && cell.Left.Left.IsNotNullOrEmpty() && cell.Left.Left.ChildItem.Type == itemType)
+               || (cell.Down.IsNotNullOrEmpty() && cell.Down.ChildItem.Type == itemType && cell.Down.Down.IsNotNullOrEmpty() && cell.Down.Down.ChildItem.Type == itemType)) {
+              itemTypesAvailable.Remove(itemType);
+              itemType = itemTypesAvailable.GetRandomElement();
+            }
+            cell.ChildItem = ItemFactory.Current.GetItem(itemType);
+            cell.ChildItem.Show();
           }
-          cell.ChildItem = ItemFactory.Current.GetItem(itemType);
-          cell.ChildItem.Show();
         }
       }
     }
@@ -121,30 +128,26 @@
         if(toCell == null)
           return;
         Move move = new Move(fromCell, toCell);
-        move.Apply();
-        Combination combination;
-        bool isValid = false;
-        //List<Cell> affectedCells = new List<Cell>();
-        if(Combination.Detect(out combination, move.To)) {
-          combination.Remove();
-          isValid = true;
-          // affectedCells.AddRange(combination.Cells);
-        }
-        if(Combination.Detect(out combination, move.From)) {
-          combination.Remove();
-          isValid = true;
-          //affectedCells.AddRange(combination.Cells);
-        }
-        if(!isValid/*affectedCells.Count == 0*/) {
-          move.Revert();
-        }
-        else {
-          //StartCoroutine(NormalizeBoard(affectedCells));
+        if(move.CanApply()) {
+          move.Apply();
+          Combination combination;
+          bool isValid = false;
+          if(Combination.Detect(out combination, move.To)) {
+            combination.Remove();
+            isValid = true;
+          }
+          if(Combination.Detect(out combination, move.From)) {
+            combination.Remove();
+            isValid = true;
+          }
+          if(!isValid) {
+            move.Revert();
+          }
         }
       };
     }
 
-    private Cell GetCell(Vector2 screenPosition) {
+    public Cell GetCell(Vector2 screenPosition) {
       var offset = new Vector2(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
       Vector2 pos = Camera.main.ScreenToWorldPoint(screenPosition);
       pos -= this.transform.position.ToVector2() + offset;
@@ -158,7 +161,7 @@
         for(int j = 0; j < CELLS_COUNT_Y; j++) {
           var cell = Board.Cells[i, j];
           if(cell.ChildItem != null)
-            cell.RemoveItem();
+            cell.ChildItem.Hide();
         }
       }
     }
