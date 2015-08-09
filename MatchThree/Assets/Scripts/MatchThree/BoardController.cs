@@ -9,6 +9,8 @@
   using System.IO;
   using System.Runtime.Serialization.Formatters.Binary;
   using Elements.Game.MatchThree.Data;
+  using Elements.Storage;
+using UnityEngine.UI;
 
   public class BoardController: MonoBehaviour {
 
@@ -20,7 +22,6 @@
     public const int CELLS_COUNT_X = 9;
     public const int CELLS_COUNT_Y = 9;
 
-    public string LevelName = "Test";
     public float CellWidth = 2;
     public float CellHeight = 2;
 
@@ -62,7 +63,7 @@
     }
 
     private void PrepareLevel() {
-      using(var ms = new MemoryStream(Resources.Load<TextAsset>("Levels/" + LevelName).bytes)) {
+      using(var ms = new MemoryStream(Resources.Load<TextAsset>("Levels/" + SessionStorage.LevelToLoad).bytes)) {
           Board.SetData(new BinaryFormatter().Deserialize(ms) as BoardData);
       }
     }
@@ -238,10 +239,6 @@
     }
 
     public void Shuffle() {
-      //!!
-      foreach(var cell in Board.Cells)
-        cell.GetComponent<SpriteRenderer>().color = Color.white;
-      //!!
       IsInitialized = false;
       RemoveItems();
       PrepareItems();
@@ -250,6 +247,11 @@
 
     public void RandomMove() {
       GetPossibleMoves().GetRandomElement().Apply();
+    }
+
+    public void Load(InputField input) {
+      SessionStorage.LevelToLoad = input.text;
+      Application.LoadLevel(Application.loadedLevel);
     }
   }
 }

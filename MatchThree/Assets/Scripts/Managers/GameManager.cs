@@ -15,7 +15,7 @@
     void Awake() {
       _Current = this;
       FPSCounter.Instantiate();
-      DebugConsole.Instantiate((int)(Screen.width / 3), 15);
+      DebugConsole.Instantiate((int)(Screen.width / 3), 10);
     }
   }
 }
