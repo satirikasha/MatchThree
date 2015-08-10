@@ -80,14 +80,23 @@
         DeselectCell(SelectedCell);
         SelectedCell = null;
       }
-      Mode = mode;
-      if(Mode == BoardEditorMode.Generate) {
+      if(mode == BoardEditorMode.Generate) {
         foreach(var cell in Board.Cells) {
           if(cell.Data.IsItemGenerator) {
             ShowGenerator(cell);
           }
         }
       }
+      else {
+        if(Mode == BoardEditorMode.Generate) {
+          foreach(var cell in Board.Cells) {
+            if(cell.Data.IsItemGenerator) {
+              HideGenerator(cell);
+            }
+          }
+        }
+      }
+      Mode = mode;
     }
 
     public void OnClick(Vector2 position) {
@@ -138,11 +147,21 @@
     }
 
     private void ShowGenerator(Cell cell) {
-
+      var obj = new GameObject("ItemGenerator", typeof(SpriteRenderer));
+      var renderer = obj.GetComponent<SpriteRenderer>();
+      renderer.sprite = GeneratorIcon;
+      renderer.sortingLayerName = "Obstacles";
+      renderer.sortingOrder = 100;
+      obj.transform.parent = cell.transform;
+      obj.transform.localScale = Vector3.one;
+      obj.transform.localPosition = Vector3.zero;
     }
 
     private void HideGenerator(Cell cell) {
-
+      var transform = cell.transform.FindChild("ItemGenerator");
+      if(transform != null){
+        Destroy(transform.gameObject);
+      }
     }
 
     private void SelectCell(Cell cell) {
@@ -176,7 +195,10 @@
 
     private void LoadFromFile(string path) {
       using(var fs = new FileStream(path, FileMode.Open)) {
-        Board.SetData(new BinaryFormatter().Deserialize(fs) as BoardData);
+        var data = new BinaryFormatter().Deserialize(fs) as BoardData;
+        SetSize(data.Size);
+        Board.SetData(data);
+        OnLevelLoaded(Board);
       }
     }
 
@@ -293,6 +315,7 @@
       DestroyBoard();
       PrepareCells();
       PrepareCamera();
+      PrepareItemTypes();
     }
 
     public void DestroyBoard() {
