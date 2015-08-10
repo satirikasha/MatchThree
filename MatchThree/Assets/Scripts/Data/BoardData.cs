@@ -6,6 +6,7 @@
 
   [Serializable]
   public class BoardData {
+    public int Size;
     public CellData[,] Cells;
     public ItemType[] ItemTypes;
   }

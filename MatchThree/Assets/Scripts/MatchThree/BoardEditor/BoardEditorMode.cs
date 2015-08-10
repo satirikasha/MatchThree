@@ -3,6 +3,7 @@
    public enum BoardEditorMode {
      Normal,
      Restore, 
-     Delete
+     Delete,
+     Generate
   }
 }

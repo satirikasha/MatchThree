@@ -41,16 +41,18 @@ using UnityEngine.UI;
     }
 
     void Update() {
-      if(Input.GetKeyDown(KeyCode.Alpha1))
-        ChildToggles[0].isOn = !ChildToggles[0].isOn;
-      if(Input.GetKeyDown(KeyCode.Alpha2))
-        ChildToggles[1].isOn = !ChildToggles[1].isOn;
-      if(Input.GetKeyDown(KeyCode.Alpha3))
-        ChildToggles[2].isOn = !ChildToggles[2].isOn;
-      if(Input.GetKeyDown(KeyCode.Alpha4))
-        ChildToggles[3].isOn = !ChildToggles[3].isOn;
-      if(Input.GetKeyDown(KeyCode.Alpha5))
-        ChildToggles[4].isOn = !ChildToggles[4].isOn;
+      if(Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) {
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+          ChildToggles[0].isOn = !ChildToggles[0].isOn;
+        if(Input.GetKeyDown(KeyCode.Alpha2))
+          ChildToggles[1].isOn = !ChildToggles[1].isOn;
+        if(Input.GetKeyDown(KeyCode.Alpha3))
+          ChildToggles[2].isOn = !ChildToggles[2].isOn;
+        if(Input.GetKeyDown(KeyCode.Alpha4))
+          ChildToggles[3].isOn = !ChildToggles[3].isOn;
+        if(Input.GetKeyDown(KeyCode.Alpha5))
+          ChildToggles[4].isOn = !ChildToggles[4].isOn;
+      }
     }
   }
 }

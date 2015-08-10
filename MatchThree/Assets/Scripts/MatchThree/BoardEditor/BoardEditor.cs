@@ -19,16 +19,20 @@
 
     public const string FILE_EXT = ".bytes";
 
+    [Space(10)]
+    public Sprite GeneratorIcon;
+
     public BoardEditorMode Mode { get; private set; }
 
+    private int CurrentSize = Board.MAX_SIZE;
     private Cell SelectedCell;
-
     private string CurrentFilePath;
 
     void Awake() {
       _Current = this;
-      PrepareItemTypes();
       PrepareCells();
+      PrepareCamera();
+      PrepareItemTypes();
     }
 
     void Start() {
@@ -36,24 +40,20 @@
     }
 
     private void PrepareItemTypes() {
-      Board = new Board();
       Board.ItemTypes = Enum.GetValues(typeof(ItemType)).Cast<ItemType>().ToList();
     }
 
-    private void PrepareCells() {
-      Board.Cells = new Cell[CELLS_COUNT_X, CELLS_COUNT_Y];
-      var offset = new Vector3(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
-      for(int i = 0; i < CELLS_COUNT_X; i++) {
-        for(int j = 0; j < CELLS_COUNT_Y; j++) {
-          var cell = Instantiate(CellPrefab).GetComponent<Cell>();
-          cell.transform.parent = CellsContainer;
-          cell.transform.localPosition = new Vector3(i * CellWidth + CellWidth / 2, j * CellHeight + CellHeight / 2, 0) + offset;
-          cell.BoardPosition = new Position() { x = i, y = j };
-          cell.Data.IsItemGenerator = j == CELLS_COUNT_Y - 1;
-          cell.enabled = false;
-          Board.Cells[i, j] = cell;
-        }
-      }
+    protected override void PrepareCells() {
+      Board = new Board();
+      Board.Size = CurrentSize;
+      base.PrepareCells();
+      foreach(var cell in Board.Cells)
+        cell.enabled = false;
+    }
+
+    protected override void PrepareCamera() {
+      Camera.orthographicSize = 5;
+      base.PrepareCamera();
     }
 
     void Update() { }
@@ -81,6 +81,13 @@
         SelectedCell = null;
       }
       Mode = mode;
+      if(Mode == BoardEditorMode.Generate) {
+        foreach(var cell in Board.Cells) {
+          if(cell.Data.IsItemGenerator) {
+            ShowGenerator(cell);
+          }
+        }
+      }
     }
 
     public void OnClick(Vector2 position) {
@@ -128,6 +135,14 @@
           }
         }
       }
+    }
+
+    private void ShowGenerator(Cell cell) {
+
+    }
+
+    private void HideGenerator(Cell cell) {
+
     }
 
     private void SelectCell(Cell cell) {
@@ -267,6 +282,24 @@
         SelectedCell = SelectedCell.Right;
         SelectCell(SelectedCell);
       }
+    }
+
+    public void SetSize(Single size) {
+      SetSize((int)size);
+    }
+
+    public void SetSize(int size) {
+      CurrentSize = size;
+      DestroyBoard();
+      PrepareCells();
+      PrepareCamera();
+    }
+
+    public void DestroyBoard() {
+      foreach(var cell in Board.Cells) {
+        Destroy(cell.gameObject);
+      }
+      Board = null;
     }
 
     public void Delete() {

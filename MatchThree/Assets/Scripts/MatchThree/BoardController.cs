@@ -19,9 +19,6 @@ using UnityEngine.UI;
     }
     protected static BoardController _Current;
 
-    public const int CELLS_COUNT_X = 9;
-    public const int CELLS_COUNT_Y = 9;
-
     public float CellWidth = 2;
     public float CellHeight = 2;
 
@@ -29,6 +26,9 @@ using UnityEngine.UI;
     public Transform ItemsContainer;
 
     public GameObject CellPrefab;
+
+    public Camera Camera;
+    public float CameraSizeCoeff = 0.25f;
 
     public bool IsInitialized { get; private set; }
 
@@ -40,7 +40,8 @@ using UnityEngine.UI;
     void Awake() {
       _Current = this;
       PrepareCells();
-      PrepareLevel();
+      PrepareBoard();
+      PrepareCamera();
       PrepareFactory();
       PrepareItems();
       PrepareInput();
@@ -62,28 +63,39 @@ using UnityEngine.UI;
       }
     }
 
-    private void PrepareLevel() {
+    private void PrepareBoard() {
+      BoardData data;
       using(var ms = new MemoryStream(Resources.Load<TextAsset>("Levels/" + SessionStorage.LevelToLoad).bytes)) {
-          Board.SetData(new BinaryFormatter().Deserialize(ms) as BoardData);
+        data = new BinaryFormatter().Deserialize(ms) as BoardData;
       }
+      Board = new Board();
+      Board.Size = data.Size;
+      PrepareCells();
+      Board.SetData(data);
     }
 
-    private void PrepareCells() {
-      Board = new Board();
-      Board.Cells = new Cell[CELLS_COUNT_X, CELLS_COUNT_Y];
+    /// <summary>
+    /// Board size shoud be set before preparing cells
+    /// </summary>
+    protected virtual void PrepareCells() {
+      Board.Cells = new Cell[Board.Size, Board.Size];
       RecentlyChangedCells = new HashSet<Cell>();
-      var offset = new Vector3(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
-      for(int i = 0; i < CELLS_COUNT_X; i++) {
-        for(int j = 0; j < CELLS_COUNT_Y; j++) {
+      var offset = new Vector3(-Board.Size * CellWidth / 2, -Board.Size * CellHeight / 2);
+      for(int i = 0; i < Board.Size; i++) {
+        for(int j = 0; j < Board.Size; j++) {
           var cell = Instantiate(CellPrefab).GetComponent<Cell>();
           cell.transform.parent = CellsContainer;
           cell.transform.localPosition = new Vector3(i * CellWidth + CellWidth / 2, j * CellHeight + CellHeight / 2, 0) + offset;
           cell.BoardPosition = new Position() { x = i, y = j };
-          cell.Data.IsItemGenerator = j == CELLS_COUNT_Y - 1;
+          cell.Data.IsItemGenerator = j == Board.Size - 1;
           cell.OnChildItemChanged += _ => { if(IsInitialized) RecentlyChangedCells.Add(_); };
           Board.Cells[i, j] = cell;
         }
       }
+    }
+
+    protected virtual void PrepareCamera() {
+      Camera.orthographicSize -= (Board.MAX_SIZE - Board.Size) * CameraSizeCoeff;
     }
 
     private void PrepareFactory() {
@@ -92,8 +104,8 @@ using UnityEngine.UI;
     }
 
     private void PrepareItems() {
-      for(int i = 0; i < CELLS_COUNT_X; i++) {
-        for(int j = 0; j < CELLS_COUNT_Y; j++) {
+      for(int i = 0; i < Board.Size; i++) {
+        for(int j = 0; j < Board.Size; j++) {
           var cell = Board.Cells[i, j];
           if(!cell.Data.IsVoid) {
             var itemTypesAvailable = new List<ItemType>(Board.ItemTypes);
@@ -149,17 +161,17 @@ using UnityEngine.UI;
     }
 
     public Cell GetCell(Vector2 screenPosition) {
-      var offset = new Vector2(-CELLS_COUNT_X * CellWidth / 2, -CELLS_COUNT_Y * CellHeight / 2);
+      var offset = new Vector2(-Board.Size * CellWidth / 2, -Board.Size * CellHeight / 2);
       Vector2 pos = Camera.main.ScreenToWorldPoint(screenPosition);
       pos -= this.transform.position.ToVector2() + offset;
       var x = Mathf.RoundToInt((pos.x - CellWidth / 2) / CellWidth);
       var y = Mathf.RoundToInt((pos.y - CellHeight / 2) / CellHeight);
-      return x.IsBetween(0, CELLS_COUNT_X - 1) && y.IsBetween(0, CELLS_COUNT_Y - 1) ? Board.Cells[x, y] : null;
+      return x.IsBetween(0, Board.Size - 1) && y.IsBetween(0, Board.Size - 1) ? Board.Cells[x, y] : null;
     }
 
     public void RemoveItems() {
-      for(int i = 0; i < CELLS_COUNT_X; i++) {
-        for(int j = 0; j < CELLS_COUNT_Y; j++) {
+      for(int i = 0; i < Board.Size; i++) {
+        for(int j = 0; j < Board.Size; j++) {
           var cell = Board.Cells[i, j];
           if(cell.ChildItem != null)
             cell.ChildItem.Hide();
@@ -169,8 +181,8 @@ using UnityEngine.UI;
 
     public MoveHash GetPossibleMoves() {
       MoveHash result = new MoveHash();
-      for(int i = 0; i < CELLS_COUNT_X; i++) {
-        for(int j = 0; j < CELLS_COUNT_Y; j++) {
+      for(int i = 0; i < Board.Size; i++) {
+        for(int j = 0; j < Board.Size; j++) {
           #region Moves detecting
           var cell = Board.Cells[i, j];
           var cellType = cell.ChildItem.Type;

@@ -17,21 +17,21 @@ using UnityEngine.Events;
     private static BoardEditorInput _Current;
 
     public static Dictionary<string, string> HotkeysDesc = new Dictionary<string, string>() {
-        {"1",                "Enable/disable water"       },
-        {"2",                "Enable/disable fire"        },
-        {"3",                "Enable/disable wind"        },
-        {"4",                "Enable/disable earth"       },
-        {"5",                "Enable/disable electo"      },
-        {"c",                "Add/remove clay"            },
-        {"b",                "Add/remove block"           },
-        {"↑",                "Move selection up"          },
-        {"↓",                "Move selection down"        },
-        {"→",                "Move selection right"       },
-        {"←",                "Move selection left"        },
-        {"esc",              "Switch to normal mode"      },
-        {"ctrl + s",         "Save"                       },
-        {"ctrl + shift + s", "Save as"                    },
-        {"ctrl + shift + n", "New file"                   }
+        {"ctrl + 1",         "Enable/disable water" },
+        {"ctrl + 2",         "Enable/disable fire"  },
+        {"ctrl + 3",         "Enable/disable wind"  },
+        {"ctrl + 4",         "Enable/disable earth" },
+        {"ctrl + 5",         "Enable/disable electo"},
+        {"c",                "Add/remove clay"      },
+        {"b",                "Add/remove block"     },
+        {"↑",                "Move selection up"    },
+        {"↓",                "Move selection down"  },
+        {"→",                "Move selection right" },
+        {"←",                "Move selection left"  },
+        {"esc",              "Switch to normal mode"},
+        {"ctrl + s",         "Save"                 },
+        {"ctrl + shift + s", "Save as"              },
+        {"ctrl + shift + n", "New file"             }
     };
 
     public UnityEvent OnEditorModeReset;
@@ -45,7 +45,7 @@ using UnityEngine.Events;
     void Start() {
       var rectTransform = (RectTransform)this.transform;
       rectTransform.position = Camera.main.WorldToScreenPoint(BoardEditor.Current.transform.position);
-      var deltaPos = Camera.main.WorldToScreenPoint(BoardEditor.Current.transform.position - new Vector3(BoardEditor.Current.CellWidth * BoardEditor.CELLS_COUNT_X / 2, 0));
+      var deltaPos = Camera.main.WorldToScreenPoint(BoardEditor.Current.transform.position - new Vector3(BoardEditor.Current.CellWidth * BoardEditor.Current.Board.Size / 2, 0));
       var size = (rectTransform.position.x - deltaPos.x) * 2;
       rectTransform.sizeDelta = Vector2.one * size;
     }
@@ -123,6 +123,17 @@ using UnityEngine.Events;
       }
       else {
         if(BoardEditor.Current.Mode == BoardEditorMode.Delete) {
+          BoardEditor.Current.SetMode(BoardEditorMode.Normal);
+        }
+      }
+    }
+
+    public void OnGenerateModeChanged(bool value) {
+      if(value) {
+        BoardEditor.Current.SetMode(BoardEditorMode.Generate);
+      }
+      else {
+        if(BoardEditor.Current.Mode == BoardEditorMode.Generate) {
           BoardEditor.Current.SetMode(BoardEditorMode.Normal);
         }
       }

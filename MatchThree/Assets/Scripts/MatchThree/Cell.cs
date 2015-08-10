@@ -52,7 +52,7 @@
     #region Navigation properties
     public Cell Up {
       get {
-        if(_Up == null && BoardPosition.y < BoardController.CELLS_COUNT_Y - 1)
+        if(_Up == null && BoardPosition.y < BoardController.Current.Board.Size - 1)
           _Up = BoardController.Current.Board.Cells[BoardPosition.x, BoardPosition.y + 1];
         return _Up;
       }
@@ -70,7 +70,7 @@
 
     public Cell Right {
       get {
-        if(_Right == null && BoardPosition.x < BoardController.CELLS_COUNT_X - 1)
+        if(_Right == null && BoardPosition.x < BoardController.Current.Board.Size - 1)
           _Right = BoardController.Current.Board.Cells[BoardPosition.x + 1, BoardPosition.y];
         return _Right;
       }
